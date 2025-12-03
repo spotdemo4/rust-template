@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "renovate.json": "jsonc",
+    ".envrc.project": "shellscript"
+  },
+
+  // rust
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+
+  // nix
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nixd",
+  "[nix]": {
+    "editor.defaultFormatter": "jnoortheen.nix-ide"
+  },
+
+  // actions
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
