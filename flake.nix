@@ -170,7 +170,10 @@
             name = "root";
             path = ./.;
           };
-          cargoLock.lockFile = finalAttrs.src + "Cargo.lock";
+          cargoLock.lockFile = builtins.path {
+            name = "Cargo.lock";
+            path = ./Cargo.lock;
+          };
 
           meta = {
             description = "rust template";
