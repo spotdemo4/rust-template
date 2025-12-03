@@ -162,27 +162,25 @@
           dev.script = "cargo run";
         };
 
-        packages = {
-          default = pkgs.rustPlatform.buildRustPackage (finalAttrs: {
-            pname = "rust-template";
-            version = "0.1.0";
+        packages.default = pkgs.rustPlatform.buildRustPackage (finalAttrs: {
+          pname = "rust-template";
+          version = "0.1.0";
 
-            src = builtins.path {
-              name = "root";
-              path = ./.;
-            };
-            cargoLock.lockFile = ./Cargo.lock;
+          src = builtins.path {
+            name = "root";
+            path = ./.;
+          };
+          cargoLock.lockFile = finalAttrs.src + "Cargo.lock";
 
-            meta = {
-              description = "rust template";
-              mainProgram = "rust-template";
-              homepage = "https://github.com/spotdemo4/rust-template";
-              changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
-              license = pkgs.lib.licenses.mit;
-              platforms = pkgs.lib.platforms.all;
-            };
-          });
-        };
+          meta = {
+            description = "rust template";
+            mainProgram = "rust-template";
+            homepage = "https://github.com/spotdemo4/rust-template";
+            changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
+            license = pkgs.lib.licenses.mit;
+            platforms = pkgs.lib.platforms.all;
+          };
+        });
 
         formatter = pkgs.nixfmt-tree;
       }
