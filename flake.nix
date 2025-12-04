@@ -49,20 +49,18 @@
             trev.overlays.libs
           ];
         };
-        rust = pkgs.fenix.complete.withComponents [
-          "cargo"
-          "clippy"
-          "rust-src"
-          "rustc"
-          "rustfmt"
-        ];
+        rustToolchain = pkgs.fenix.fromToolchainFile {
+          file = ./rust-toolchain.toml;
+          sha256 = "sha256-SDu4snEWjuZU475PERvu+iO50Mi39KVjqCeJeNvpguU=";
+        };
       in
       rec {
         devShells = {
           default = pkgs.mkShell {
             packages = with pkgs; [
               # rust
-              rust
+              rustToolchain
+              cargo-zigbuild
 
               # util
               bumper
@@ -162,28 +160,120 @@
           dev.script = "cargo run";
         };
 
-        packages.default = pkgs.rustPlatform.buildRustPackage (finalAttrs: {
-          pname = "rust-template";
-          version = "0.1.1";
+        packages =
+          let
+            rustTargetToPlatform =
+              rustTarget:
+              let
+                # Parse the rust target into a platform
+                platform = pkgs.lib.systems.elaborate {
+                  config = rustTarget;
+                };
+              in
+              platform;
 
-          src = builtins.path {
-            name = "root";
-            path = ./.;
-          };
-          cargoLock.lockFile = builtins.path {
-            name = "Cargo.lock";
-            path = ./Cargo.lock;
-          };
+            platforms =
+              builtins.map (target: rustTargetToPlatform target)
+                (builtins.fromTOML (builtins.readFile ./rust-toolchain.toml)).toolchain.targets;
 
-          meta = {
-            description = "rust template";
-            mainProgram = "rust-template";
-            homepage = "https://github.com/spotdemo4/rust-template";
-            changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
-            license = pkgs.lib.licenses.mit;
-            platforms = pkgs.lib.platforms.all;
+            rustPlatform = pkgs.makeRustPlatform {
+              cargo = rustToolchain;
+              rustc = rustToolchain;
+            };
+
+            # supported targets https://doc.rust-lang.org/nightly/rustc/platform-support.html
+            mkRustPackage =
+              targetPlatform:
+              rustPlatform.buildRustPackage (finalAttrs: {
+                pname = "rust-template";
+                version = "0.1.1";
+
+                src = builtins.path {
+                  name = "root";
+                  path = ./.;
+                };
+
+                cargoLock.lockFile = builtins.path {
+                  name = "Cargo.lock";
+                  path = ./Cargo.lock;
+                };
+
+                nativeBuildInputs = with pkgs; [
+                  cargo-zigbuild
+                  jq
+                ];
+
+                # fix for https://github.com/rust-cross/cargo-zigbuild/issues/162
+                auditable = false;
+
+                doCheck = false;
+
+                buildPhase = ''
+                  build_dir="''${TMPDIR:-/tmp}/rust"
+                  mkdir -p $build_dir
+
+                  export HOME=$(mktemp -d)
+                ''
+                + (
+                  if targetPlatform.system == system then
+                    "cargo build --release --target-dir $build_dir"
+                  else
+                    "cargo zigbuild --release --target ${targetPlatform.rust.rustcTarget} --target-dir $build_dir"
+                );
+
+                installPhase = ''
+                  package_name=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name')
+                  release=$(find $build_dir -type f -executable -name "''${package_name}*")
+                  release_name=$(basename $release)
+                  release_dir=$(dirname $release)
+
+                  mkdir -p $out/bin
+                  mv $release $out/bin/$release_name
+                '';
+
+                meta = {
+                  description = "template for rust projects";
+                  mainProgram = if targetPlatform.isWindows then "rust-template.exe" else "rust-template";
+                  homepage = "https://github.com/spotdemo4/rust-template";
+                  changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
+                  license = pkgs.lib.licenses.mit;
+                  platforms = pkgs.lib.platforms.all;
+                };
+              });
+
+            mkImage =
+              targetPlatform: drv:
+              pkgs.dockerTools.buildLayeredImage {
+                name = drv.pname;
+                tag = "${drv.version}-${targetPlatform.go.GOARCH}";
+                architecture = targetPlatform.go.GOARCH;
+                created = "now";
+                meta = drv.meta;
+                contents = with pkgs; [
+                  drv
+                  dockerTools.caCertificates
+                ];
+                config.Cmd = [
+                  "${pkgs.lib.meta.getExe drv}"
+                ];
+              };
+
+            binaries = pkgs.lib.genAttrs' platforms (
+              platform: pkgs.lib.nameValuePair platform.system (mkRustPackage platform)
+            );
+
+            images = pkgs.lib.genAttrs' (builtins.filter (platform: platform.isLinux) platforms) (
+              platform:
+              pkgs.lib.nameValuePair (platform.system + "-docker") (
+                mkImage platform packages."${platform.system}"
+              )
+            );
+          in
+          binaries
+          // images
+          // {
+            default = packages."${system}";
           };
-        });
 
         formatter = pkgs.nixfmt-tree;
       }
