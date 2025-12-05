@@ -186,7 +186,7 @@
               targetPlatform:
               rustPlatform.buildRustPackage (finalAttrs: {
                 pname = "rust-template";
-                version = "0.2.0";
+                version = "0.2.1";
 
                 src = builtins.path {
                   name = "root";
