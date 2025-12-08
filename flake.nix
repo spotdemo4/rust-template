@@ -74,18 +74,6 @@
             shellHook = pkgs.shellhook.ref;
           };
 
-          bump = pkgs.mkShell {
-            packages = with pkgs; [
-              nix-update
-            ];
-          };
-
-          release = pkgs.mkShell {
-            packages = with pkgs; [
-              skopeo
-            ];
-          };
-
           update = pkgs.mkShell {
             packages = with pkgs; [
               renovate
@@ -118,8 +106,8 @@
               opengrep
             ];
             script = ''
-              cargo test --offline
               cargo fmt --check
+              cargo test --offline
               cargo clippy --offline -- -D warnings
               opengrep scan \
                 --quiet \
@@ -148,7 +136,7 @@
               renovate
             ];
             script = ''
-              prettier --check .
+              prettier --check "**/*.json" "**/*.yaml"
               action-validator .github/**/*.yaml
               octoscan scan .github
               renovate-config-validator .github/renovate.json
@@ -162,16 +150,14 @@
 
         packages =
           let
+            # Parse the rust target into a platform
             rustTargetToPlatform =
               rustTarget:
-              let
-                # Parse the rust target into a platform
-                platform = pkgs.lib.systems.elaborate {
-                  config = rustTarget;
-                };
-              in
-              platform;
+              pkgs.lib.systems.elaborate {
+                config = rustTarget;
+              };
 
+            # Get all platforms from rust-toolchain.toml
             platforms =
               builtins.map (target: rustTargetToPlatform target)
                 (builtins.fromTOML (builtins.readFile ./rust-toolchain.toml)).toolchain.targets;
