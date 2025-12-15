@@ -205,14 +205,13 @@
                   if targetPlatform.system == system then
                     "cargo build --release --target-dir $build_dir"
                   else
-                    "cargo zigbuild --release --target ${targetPlatform.rust.rustcTarget} --target-dir $build_dir"
+                    "cargo zigbuild --release --target-dir $build_dir --target ${targetPlatform.rust.rustcTarget}"
                 );
 
                 installPhase = ''
                   package_name=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name')
                   release=$(find $build_dir -type f -executable -name "''${package_name}*")
                   release_name=$(basename $release)
-                  release_dir=$(dirname $release)
 
                   mkdir -p $out/bin
                   mv $release $out/bin/$release_name
