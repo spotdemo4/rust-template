@@ -65,6 +65,7 @@
 
               # util
               bumper
+              nix-fix-hash
 
               # nix
               nixfmt
@@ -78,6 +79,7 @@
           update = pkgs.mkShell {
             packages = with pkgs; [
               renovate
+              nix-fix-hash
 
               # rust
               cargo

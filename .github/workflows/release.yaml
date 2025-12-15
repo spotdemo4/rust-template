@@ -24,6 +24,6 @@ jobs:
           app_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Release
-        uses: spotdemo4/nix-flake-release@6f7b547cebda05322ef55694915f6b7bbdc65b1a # v0.6.1
+        uses: spotdemo4/nix-flake-release@2b3d64db435ff64c3b66edb32a7fa3ad2bcb6d42 # v0.7.0
         with:
           github_token: ${{ steps.checkout.outputs.token }}

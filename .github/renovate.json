@@ -6,6 +6,7 @@
   "requireConfig": "ignored",
   "platform": "github",
   "repositories": ["spotdemo4/rust-template"],
+  "allowedCommands": ["nix-fix-hash"],
 
   // repository
   "extends": ["config:recommended"],
@@ -30,6 +31,11 @@
     {
       "groupName": "github actions",
       "matchManagers": ["github-actions"]
+    },
+    {
+      "postUpgradeTasks": {
+        "commands": ["nix-fix-hash"]
+      }
     }
   ]
 }
