@@ -59,21 +59,21 @@ bumper
 
 | OS    | Architecture | Download                                                                                                                                                   |
 | ----- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux | amd64        | [rust-template-0.2.2-x86_64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.2/rust-template-0.2.2-x86_64-linux.tar.xz)     |
-| Linux | arm64        | [rust-template-0.2.2-aarch64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.2/rust-template-0.2.2-aarch64-linux.tar.xz)   |
-| MacOS | arm64        | [rust-template-0.2.2-aarch64-darwin.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.2/rust-template-0.2.2-aarch64-darwin.tar.xz) |
+| Linux | amd64        | [rust-template-0.2.3-x86_64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.3/rust-template-0.2.3-x86_64-linux.tar.xz)     |
+| Linux | arm64        | [rust-template-0.2.3-aarch64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.3/rust-template-0.2.3-aarch64-linux.tar.xz)   |
+| MacOS | arm64        | [rust-template-0.2.3-aarch64-darwin.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.2.3/rust-template-0.2.3-aarch64-darwin.tar.xz) |
 
 ### Docker
 
 ```elm
-docker run ghcr.io/spotdemo4/rust-template:0.2.2
+docker run ghcr.io/spotdemo4/rust-template:0.2.3
 ```
 
 ### Action
 
 ```yaml
 - name: rust template
-  uses: docker://ghcr.io/spotdemo4/rust-template:0.2.2
+  uses: docker://ghcr.io/spotdemo4/rust-template:0.2.3
 ```
 
 ### Nix
