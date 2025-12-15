@@ -49,9 +49,10 @@
             trev.overlays.libs
           ];
         };
+
         rustToolchain = pkgs.fenix.fromToolchainFile {
           file = ./rust-toolchain.toml;
-          sha256 = "sha256-SDu4snEWjuZU475PERvu+iO50Mi39KVjqCeJeNvpguU=";
+          sha256 = "sha256-sqSWJDUxc+zaz1nBWMAJKTAGBuGWP25GCftIOlCEAtA=";
         };
       in
       rec {
@@ -232,13 +233,16 @@
               pkgs.dockerTools.buildLayeredImage {
                 name = drv.pname;
                 tag = "${drv.version}-${targetPlatform.go.GOARCH}";
+
+                contents = with pkgs; [
+                  dockerTools.caCertificates
+                  drv
+                ];
+
                 architecture = targetPlatform.go.GOARCH;
                 created = "now";
                 meta = drv.meta;
-                contents = with pkgs; [
-                  drv
-                  dockerTools.caCertificates
-                ];
+
                 config.Cmd = [
                   "${pkgs.lib.meta.getExe drv}"
                 ];

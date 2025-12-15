@@ -12,27 +12,17 @@ permissions:
   packages: write
 
 jobs:
-  check:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Initialize
-        uses: spotdemo4/nix-init@59e9eaa3d67e67b17b92ce2c6ffc83deed76fc91 # v1.11.0
-
-      - name: Check
-        run: nix flake check
-
   release:
-    needs: check
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         id: checkout
-        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
+        uses: spotdemo4/better-checkout@fbd1d9e60d4d4c5c9efb2244c052cac648d62944 # v0.1.1
         with:
-          app-id: ${{ vars.CLIENT_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
+          app_id: ${{ vars.CLIENT_ID }}
+          app_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Release
-        uses: spotdemo4/nix-flake-release@71b0a149318c751d41562c51e3ee45e681b188be # v0.4.5
+        uses: spotdemo4/nix-flake-release@705a37cf5f4a18304b19c853cf9abc575a71a757 # v0.6.0
         with:
-          GITHUB_TOKEN: ${{ steps.checkout.outputs.token }}
+          github_token: ${{ steps.checkout.outputs.token }}
