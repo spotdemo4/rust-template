@@ -34,7 +34,8 @@
     {
       "postUpgradeTasks": {
         "commands": ["nix-fix-hash"]
-      }
+      },
+      "matchManagers": ["*"]
     }
   ]
 }
