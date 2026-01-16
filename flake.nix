@@ -204,7 +204,7 @@
               targetPlatform:
               rustPlatform.buildRustPackage (finalAttrs: {
                 pname = "rust-template";
-                version = "0.2.4";
+                version = "0.3.0";
 
                 src = fs.toSource {
                   root = ./.;
