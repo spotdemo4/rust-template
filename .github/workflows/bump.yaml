@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: "force"
+        description: "Force"
         required: false
         type: choice
         default: "true"
@@ -22,18 +22,23 @@ permissions:
 
 jobs:
   bump:
-    runs-on: ubuntu-24.04
+    runs-on: nix
     steps:
       - name: Checkout
         uses: spotdemo4/better-checkout@fbd1d9e60d4d4c5c9efb2244c052cac648d62944 # v0.1.1
         with:
-          app_id: ${{ vars.CLIENT_ID }}
-          app_key: ${{ secrets.PRIVATE_KEY }}
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
           fetch-depth: 0
 
-      - name: Bump
-        uses: spotdemo4/bumper@415b3b6011a9242aa3becbc24413ad321d37b9f7 # v0.7.3
+      - name: Develop
+        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
         with:
-          debug: ${{ runner.debug }}
-          force: ${{ inputs.force }}
-          files: .github/README.md
+          arguments: ".#bump"
+
+      - name: Bump
+        run: bumper
+        env:
+          FORCE: ${{ inputs.force }}
+          PATHS: |-
+            .github/README.md

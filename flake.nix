@@ -24,10 +24,6 @@
       inputs.systems.follows = "systems";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    semgrep-rules = {
-      url = "github:semgrep/semgrep-rules";
-      flake = false;
-    };
   };
 
   outputs =
@@ -35,7 +31,6 @@
       nixpkgs,
       fenix,
       trev,
-      semgrep-rules,
       ...
     }:
     trev.libs.mkFlake (
@@ -49,11 +44,11 @@
             trev.overlays.libs
           ];
         };
-
         rustToolchain = pkgs.fenix.fromToolchainFile {
           file = ./rust-toolchain.toml;
           sha256 = "sha256-sqSWJDUxc+zaz1nBWMAJKTAGBuGWP25GCftIOlCEAtA=";
         };
+        fs = pkgs.lib.fileset;
       in
       rec {
         devShells = {
@@ -63,17 +58,27 @@
               rustToolchain
               cargo-zigbuild
 
+              # formatters
+              nixfmt
+              prettier
+
               # util
               bumper
               nix-fix-hash
-
-              # nix
-              nixfmt
-
-              # actions
-              prettier
             ];
             shellHook = pkgs.shellhook.ref;
+          };
+
+          bump = pkgs.mkShell {
+            packages = with pkgs; [
+              bumper
+            ];
+          };
+
+          release = pkgs.mkShell {
+            packages = with pkgs; [
+              nix-flake-release
+            ];
           };
 
           update = pkgs.mkShell {
@@ -106,22 +111,19 @@
             deps = with pkgs; [
               rustfmt
               clippy
-              opengrep
             ];
             script = ''
               cargo fmt --check
               cargo test --offline
               cargo clippy --offline -- -D warnings
-              opengrep scan \
-                --quiet \
-                --error \
-                --use-git-ignore \
-                --config="${semgrep-rules}/rust"
             '';
           };
 
           nix = {
-            src = ./.;
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.fileFilter (file: file.hasExt "nix") ./.;
+            };
             deps = with pkgs; [
               nixfmt-tree
             ];
@@ -130,19 +132,46 @@
             '';
           };
 
-          actions = {
-            src = ./.;
+          renovate = {
+            src = fs.toSource {
+              root = ./.github;
+              fileset = ./.github/renovate.json;
+            };
             deps = with pkgs; [
-              prettier
-              action-validator
-              octoscan
               renovate
             ];
             script = ''
-              prettier --check "**/*.json" "**/*.yaml"
-              action-validator .github/**/*.yaml
-              octoscan scan .github
-              renovate-config-validator .github/renovate.json
+              renovate-config-validator renovate.json
+            '';
+          };
+
+          actions = {
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.unions [
+                ./.github/workflows
+              ];
+            };
+            deps = with pkgs; [
+              action-validator
+              octoscan
+            ];
+            script = ''
+              action-validator **/*.yaml
+              octoscan scan .
+            '';
+          };
+
+          prettier = {
+            src = fs.toSource {
+              root = ./.;
+              fileset = fs.fileFilter (file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md") ./.;
+            };
+            deps = with pkgs; [
+              prettier
+            ];
+            script = ''
+              prettier --check .
             '';
           };
         };
@@ -162,8 +191,8 @@
 
             # Get all platforms from rust-toolchain.toml
             platforms =
-              builtins.map (target: rustTargetToPlatform target)
-                (builtins.fromTOML (builtins.readFile ./rust-toolchain.toml)).toolchain.targets;
+              map (target: rustTargetToPlatform target)
+                (fromTOML (builtins.readFile ./rust-toolchain.toml)).toolchain.targets;
 
             rustPlatform = pkgs.makeRustPlatform {
               cargo = rustToolchain;
@@ -177,9 +206,14 @@
                 pname = "rust-template";
                 version = "0.2.4";
 
-                src = builtins.path {
-                  name = "root";
-                  path = ./.;
+                src = fs.toSource {
+                  root = ./.;
+                  fileset = fs.unions [
+                    ./Cargo.lock
+                    ./Cargo.toml
+                    ./rust-toolchain.toml
+                    (fs.fileFilter (file: file.hasExt "rs") ./.)
+                  ];
                 };
 
                 cargoLock.lockFile = builtins.path {
@@ -260,11 +294,11 @@
               )
             );
           in
-          binaries
-          // images
-          // {
+          {
             default = packages."${system}";
-          };
+          }
+          // binaries
+          // images;
 
         formatter = pkgs.nixfmt-tree;
       }

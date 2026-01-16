@@ -2,7 +2,7 @@
   "recommendations": [
     "rust-lang.rust-analyzer",
     "jnoortheen.nix-ide",
-    "esbenp.prettier-vscode",
+    "prettier.prettier-vscode",
     "tamasfe.even-better-toml"
   ]
 }

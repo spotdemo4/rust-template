@@ -41,7 +41,6 @@
       "inputs": {
         "fenix": "fenix",
         "nixpkgs": "nixpkgs",
-        "semgrep-rules": "semgrep-rules",
         "systems": "systems",
         "trev": "trev"
       }
@@ -60,22 +59,6 @@
         "owner": "rust-lang",
         "ref": "nightly",
         "repo": "rust-analyzer",
-        "type": "github"
-      }
-    },
-    "semgrep-rules": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1764007879,
-        "narHash": "sha256-YBa6DJnMaIBDGERaqHiXG15t2Sdb1noqY7f/C0OtVbQ=",
-        "owner": "semgrep",
-        "repo": "semgrep-rules",
-        "rev": "1b69c3f93aa04267fd85fc668d2df168245ce776",
-        "type": "github"
-      },
-      "original": {
-        "owner": "semgrep",
-        "repo": "semgrep-rules",
         "type": "github"
       }
     },
