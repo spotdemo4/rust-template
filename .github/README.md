@@ -50,7 +50,7 @@ Releases are created automatically for [significant](https://www.conventionalcom
 To manually create a version bump:
 
 ```elm
-bumper 'action.yaml' '.github/README.md'
+bumper action.yaml .github/README.md
 ```
 
 ## Use
