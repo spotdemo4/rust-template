@@ -1,7 +1,9 @@
 # rust template
 
-[![check](https://github.com/spotdemo4/rust-template/actions/workflows/check.yaml/badge.svg?branch=main)](https://github.com/spotdemo4/rust-template/actions/workflows/check.yaml/)
-[![vulnerable](https://github.com/spotdemo4/rust-template/actions/workflows/vulnerable.yaml/badge.svg?branch=main)](https://github.com/spotdemo4/rust-template/actions/workflows/vulnerable.yaml)
+[![check](https://img.shields.io/github/actions/workflow/status/spotdemo4/rust-template/check.yaml?branch=main&logo=github&logoColor=%23bac2de&label=check&labelColor=%23313244)](https://github.com/spotdemo4/rust-template/actions/workflows/check.yaml/)
+[![vulnerable](https://img.shields.io/github/actions/workflow/status/spotdemo4/rust-template/vulnerable.yaml?branch=main&logo=github&logoColor=%23bac2de&label=vulnerable&labelColor=%23313244)](https://github.com/spotdemo4/rust-template/actions/workflows/vulnerable.yaml)
+[![channel](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fspotdemo4%2Frust-template%2Frefs%2Fheads%2Fmain%2Frust-toolchain.toml&query=%24.toolchain.channel&logo=rust&logoColor=%23bac2de&label=channel&labelColor=%23313244&color=%23D34516)](https://releases.rs/)
+[![nix](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fspotdemo4%2Frust-template%2Frefs%2Fheads%2Fmain%2Fflake.lock&query=%24.nodes.nixpkgs.original.ref&logo=nixos&logoColor=%23bac2de&label=channel&labelColor=%23313244&color=%234d6fb7)](https://nixos.org/)
 
 Template for starting [rust](https://rust-lang.org/) projects, part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
 
