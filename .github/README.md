@@ -25,32 +25,32 @@ or manually enter the development environment:
 nix develop
 ```
 
-## Run
+### Run
 
 ```elm
 nix run #dev
 ```
 
-## Build
+### Build
 
 ```elm
 nix build
 ```
 
-## Check
+### Check
 
 ```elm
 nix flake check
 ```
 
-## Release
+### Release
 
-Releases are automatically created for significant changes.
+Releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes.
 
-To manually create a new release:
+To manually create a version bump:
 
 ```elm
-bumper "action.yaml" ".github/README.md"
+bumper 'action.yaml' '.github/README.md'
 ```
 
 ## Use
