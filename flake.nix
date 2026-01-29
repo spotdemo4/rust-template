@@ -199,7 +199,7 @@
 
             package = rustPlatform.buildRustPackage (finalAttrs: {
               pname = "rust-template";
-              version = "0.4.0";
+              version = "0.4.1";
 
               src = fs.toSource {
                 root = ./.;
