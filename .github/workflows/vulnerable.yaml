@@ -10,43 +10,34 @@ permissions:
 
 jobs:
   rust:
-    runs-on: nix
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: spotdemo4/better-checkout@9a8cc716065857724440d98bc9b2bc08be8ab4bd # v0.5.0
-
-      - name: Develop
-        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        uses: spotdemo4/nix-init@df23370aceae9a7becda32705c2bc6eb7bc6174e # v1.23.0
         with:
-          arguments: ".#vulnerable"
+          shell: vulnerable
 
       - name: Run cargo audit
         run: cargo-audit audit
 
   nix:
-    runs-on: nix
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: spotdemo4/better-checkout@9a8cc716065857724440d98bc9b2bc08be8ab4bd # v0.5.0
-
-      - name: Develop
-        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        uses: spotdemo4/nix-init@df23370aceae9a7becda32705c2bc6eb7bc6174e # v1.23.0
         with:
-          arguments: ".#vulnerable"
+          shell: vulnerable
 
       - name: Run flake-checker
         run: flake-checker -f
 
   actions:
-    runs-on: nix
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: spotdemo4/better-checkout@9a8cc716065857724440d98bc9b2bc08be8ab4bd # v0.5.0
-
-      - name: Develop
-        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        uses: spotdemo4/nix-init@df23370aceae9a7becda32705c2bc6eb7bc6174e # v1.23.0
         with:
-          arguments: ".#vulnerable"
+          shell: vulnerable
 
       - name: Run octoscan
         run: octoscan scan .github

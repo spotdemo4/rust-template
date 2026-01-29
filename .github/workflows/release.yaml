@@ -9,28 +9,26 @@ concurrency:
   group: release
 
 permissions:
-  contents: write
+  contents: read
   packages: write
 
 jobs:
   release:
-    runs-on: nix
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: spotdemo4/better-checkout@9a8cc716065857724440d98bc9b2bc08be8ab4bd # v0.5.0
+      - id: checkout
+        name: Checkout
+        uses: spotdemo4/nix-init@df23370aceae9a7becda32705c2bc6eb7bc6174e # v1.23.0
         with:
-          app-id: ${{ vars.CLIENT_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Develop
-        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
-        with:
-          arguments: ".#release"
+          app_id: ${{ vars.CLIENT_ID }}
+          app_key: ${{ secrets.PRIVATE_KEY }}
+          fetch_depth: 0
+          shell: release
 
       - name: Run nix-release
         run: nix-flake-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.checkout.outputs.token }}
           REGISTRY: ghcr.io
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

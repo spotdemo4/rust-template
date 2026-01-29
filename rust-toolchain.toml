@@ -1,5 +1,5 @@
 [toolchain]
-channel = "stable"
+channel = "stable-2026-01-22"
 components = [
     "cargo",
     "clippy",
@@ -10,6 +10,7 @@ components = [
 targets = [
     "x86_64-unknown-linux-gnu",
     "aarch64-unknown-linux-gnu",
+    "armv7-unknown-linux-gnueabihf",
     "aarch64-apple-darwin",
     "x86_64-pc-windows-gnu"
 ]

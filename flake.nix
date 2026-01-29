@@ -44,19 +44,19 @@
             trev.overlays.libs
           ];
         };
+        fs = pkgs.lib.fileset;
         rustToolchain = pkgs.fenix.fromToolchainFile {
           file = ./rust-toolchain.toml;
-          sha256 = "sha256-sqSWJDUxc+zaz1nBWMAJKTAGBuGWP25GCftIOlCEAtA=";
+          sha256 = "sha256-vra6TkHITpwRyA5oBKAHSX0Mi6CBDNQD+ryPSpxFsfg=";
         };
-        fs = pkgs.lib.fileset;
       in
       rec {
         devShells = {
           default = pkgs.mkShell {
+            name = "dev";
             packages = with pkgs; [
               # rust
               rustToolchain
-              cargo-zigbuild
 
               # formatters
               nixfmt
@@ -70,21 +70,23 @@
           };
 
           bump = pkgs.mkShell {
+            name = "bump";
             packages = with pkgs; [
               bumper
             ];
           };
 
           release = pkgs.mkShell {
+            name = "release";
             packages = with pkgs; [
               nix-flake-release
             ];
           };
 
           update = pkgs.mkShell {
+            name = "update";
             packages = with pkgs; [
               renovate
-              nix-fix-hash
 
               # rust
               cargo
@@ -92,6 +94,7 @@
           };
 
           vulnerable = pkgs.mkShell {
+            name = "vulnerable";
             packages = with pkgs; [
               # rust
               cargo-audit
@@ -108,10 +111,7 @@
         checks = pkgs.lib.mkChecks {
           rust = {
             src = packages.default;
-            deps = with pkgs; [
-              rustfmt
-              clippy
-            ];
+            deps = [ rustToolchain ];
             script = ''
               cargo fmt --check
               cargo test --offline
@@ -181,124 +181,109 @@
         };
 
         packages =
+          with pkgs.lib;
           let
-            # Parse the rust target into a platform
-            rustTargetToPlatform =
-              rustTarget:
-              pkgs.lib.systems.elaborate {
-                config = rustTarget;
-              };
-
-            # Get all platforms from rust-toolchain.toml
-            platforms =
-              map (target: rustTargetToPlatform target)
-                (fromTOML (builtins.readFile ./rust-toolchain.toml)).toolchain.targets;
-
             rustPlatform = pkgs.makeRustPlatform {
               cargo = rustToolchain;
               rustc = rustToolchain;
             };
 
-            # supported targets https://doc.rust-lang.org/nightly/rustc/platform-support.html
-            mkRustPackage =
-              targetPlatform:
-              rustPlatform.buildRustPackage (finalAttrs: {
-                pname = "rust-template";
-                version = "0.3.0";
+            package = rustPlatform.buildRustPackage (finalAttrs: {
+              pname = "rust-template";
+              version = "0.3.0";
 
-                src = fs.toSource {
-                  root = ./.;
-                  fileset = fs.unions [
-                    ./Cargo.lock
-                    ./Cargo.toml
-                    ./rust-toolchain.toml
-                    (fs.fileFilter (file: file.hasExt "rs") ./.)
-                  ];
-                };
-
-                cargoLock.lockFile = builtins.path {
-                  name = "Cargo.lock";
-                  path = ./Cargo.lock;
-                };
-
-                nativeBuildInputs = with pkgs; [
-                  cargo-zigbuild
-                  jq
-                ];
-
-                # fix for https://github.com/rust-cross/cargo-zigbuild/issues/162
-                auditable = false;
-
-                doCheck = false;
-
-                buildPhase = ''
-                  build_dir="''${TMPDIR:-/tmp}/rust"
-                  mkdir -p $build_dir
-
-                  export HOME=$(mktemp -d)
-                ''
-                + (
-                  if targetPlatform.system == system then
-                    "cargo build --release --target-dir $build_dir"
-                  else
-                    "cargo zigbuild --release --target-dir $build_dir --target ${targetPlatform.rust.rustcTarget}"
-                );
-
-                installPhase = ''
-                  package_name=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name')
-                  release=$(find $build_dir -type f -executable -name "''${package_name}*")
-                  release_name=$(basename $release)
-
-                  mkdir -p $out/bin
-                  mv $release $out/bin/$release_name
-                '';
-
-                meta = {
-                  description = "template for rust projects";
-                  mainProgram = if targetPlatform.isWindows then "rust-template.exe" else "rust-template";
-                  homepage = "https://github.com/spotdemo4/rust-template";
-                  changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
-                  license = pkgs.lib.licenses.mit;
-                  platforms = pkgs.lib.platforms.all;
-                };
-              });
-
-            mkImage =
-              targetPlatform: drv:
-              pkgs.dockerTools.buildLayeredImage {
-                name = drv.pname;
-                tag = "${drv.version}-${targetPlatform.go.GOARCH}";
-
-                contents = with pkgs; [
-                  dockerTools.caCertificates
-                  drv
-                ];
-
-                architecture = targetPlatform.go.GOARCH;
-                created = "now";
-                meta = drv.meta;
-
-                config.Cmd = [
-                  "${pkgs.lib.meta.getExe drv}"
+              src = fs.toSource {
+                root = ./.;
+                fileset = fs.unions [
+                  ./Cargo.lock
+                  ./Cargo.toml
+                  ./rust-toolchain.toml
+                  (fs.fileFilter (file: file.hasExt "rs") ./.)
                 ];
               };
 
-            binaries = pkgs.lib.genAttrs' platforms (
-              platform: pkgs.lib.nameValuePair platform.system (mkRustPackage platform)
-            );
+              cargoLock.lockFile = ./Cargo.lock;
 
-            images = pkgs.lib.genAttrs' (builtins.filter (platform: platform.isLinux) platforms) (
-              platform:
-              pkgs.lib.nameValuePair (platform.system + "-docker") (
-                mkImage platform packages."${platform.system}"
-              )
-            );
+              meta = {
+                description = "template for rust projects";
+                mainProgram = "rust-template";
+                homepage = "https://github.com/spotdemo4/rust-template";
+                changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
+                license = pkgs.lib.licenses.mit;
+                platforms = pkgs.lib.platforms.all;
+              };
+            });
+
+            image = makeOverridable pkgs.dockerTools.buildLayeredImage {
+              name = package.pname;
+              tag = package.version;
+
+              contents = with pkgs; [
+                dockerTools.caCertificates
+              ];
+
+              created = "now";
+              meta = package.meta;
+
+              config = {
+                Entrypoint = [ "${meta.getExe package}" ];
+                Labels = {
+                  "org.opencontainers.image.title" = package.pname;
+                  "org.opencontainers.image.description" = package.meta.description;
+                  "org.opencontainers.image.version" = package.version;
+                  "org.opencontainers.image.source" = package.meta.homepage;
+                  "org.opencontainers.image.licenses" = package.meta.license.spdxId;
+                };
+              };
+            };
           in
-          {
-            default = packages."${system}";
-          }
-          // binaries
-          // images;
+          rec {
+            default = rust.compile {
+              inherit package;
+            };
+
+            # cross compilation
+            linux-amd64 = rust.compile {
+              inherit package;
+              target = "x86_64-unknown-linux-gnu";
+            };
+            linux-arm64 = rust.compile {
+              inherit package;
+              target = "aarch64-unknown-linux-gnu";
+            };
+            linux-arm = rust.compile {
+              inherit package;
+              target = "armv7-unknown-linux-gnueabihf";
+            };
+            darwin-arm64 = rust.compile {
+              inherit package;
+              target = "aarch64-apple-darwin";
+            };
+            windows-amd64 = rust.compile {
+              inherit package;
+              target = "x86_64-pc-windows-gnu";
+            };
+
+            # images
+            linux-amd64-image = image.override (prev: {
+              architecture = "amd64";
+              config = prev.config // {
+                Cmd = [ "${meta.getExe linux-amd64}" ];
+              };
+            });
+            linux-arm64-image = image.override (prev: {
+              architecture = "arm64";
+              config = prev.config // {
+                Cmd = [ "${meta.getExe linux-arm64}" ];
+              };
+            });
+            linux-arm-image = image.override (prev: {
+              architecture = "arm";
+              config = prev.config // {
+                Cmd = [ "${meta.getExe linux-arm}" ];
+              };
+            });
+          };
 
         formatter = pkgs.nixfmt-tree;
       }

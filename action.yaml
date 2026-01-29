@@ -1,0 +1,7 @@
+name: rust template
+description: a template for rust projects
+author: trev
+
+runs:
+  using: docker
+  image: docker://ghcr.io/spotdemo4/rust-template:0.3.0
