@@ -29,6 +29,11 @@
     {
       "groupName": "github actions",
       "matchManagers": ["github-actions"]
+    },
+    {
+      "groupName": "rust crates",
+      "matchManagers": ["cargo"],
+      "matchUpdateTypes": ["patch", "pin", "digest"]
     }
   ]
 }
