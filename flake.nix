@@ -73,6 +73,14 @@
             name = "bump";
             packages = with pkgs; [
               bumper
+              rustToolchain
+            ];
+          };
+
+          check = pkgs.mkShell {
+            name = "check";
+            packages = [
+              rustToolchain
             ];
           };
 
@@ -80,6 +88,7 @@
             name = "release";
             packages = with pkgs; [
               nix-flake-release
+              rustToolchain
             ];
           };
 
