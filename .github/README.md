@@ -8,7 +8,7 @@ Template for starting [rust](https://rust-lang.org/) projects, part of [spotdemo
 ## Requirements
 
 - [nix](https://nixos.org/)
-- (optional) [direnv](https://direnv.net/)
+- [direnv](https://direnv.net/) (optional)
 
 ## Getting started
 
@@ -50,18 +50,20 @@ Releases are automatically created for significant changes.
 To manually create a new release:
 
 ```elm
-bumper
+bumper "action.yaml" ".github/README.md"
 ```
 
 ## Use
 
-### Binary
+### Download
 
-| OS    | Architecture | Download                                                                                                                                                   |
-| ----- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux | amd64        | [rust-template-0.4.0-x86_64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template-0.4.0-x86_64-linux.tar.xz)     |
-| Linux | arm64        | [rust-template-0.4.0-aarch64-linux.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template-0.4.0-aarch64-linux.tar.xz)   |
-| MacOS | arm64        | [rust-template-0.4.0-aarch64-darwin.tar.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template-0.4.0-aarch64-darwin.tar.xz) |
+| OS      | Architecture | Download                                                                                                                                           |
+| ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Linux   | amd64        | [rust-template_0.4.0_linux_amd64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template_0.4.0_linux_amd64.xz)       |
+| Linux   | arm64        | [rust-template_0.4.0_linux_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template_0.4.0_linux_arm64.xz)       |
+| Linux   | arm          | [rust-template_0.4.0_linux_arm.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template_0.4.0_linux_arm.xz)           |
+| MacOS   | arm64        | [rust-template_0.4.0_darwin_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template_0.4.0_darwin_arm64.xz)     |
+| Windows | amd64        | [rust-template_0.4.0_windows_amd64.zip](https://github.com/spotdemo4/rust-template/releases/download/v0.4.0/rust-template_0.4.0_windows_amd64.zip) |
 
 ### Docker
 
@@ -73,7 +75,7 @@ docker run ghcr.io/spotdemo4/rust-template:0.4.0
 
 ```yaml
 - name: rust template
-  uses: docker://ghcr.io/spotdemo4/rust-template:0.4.0
+  uses: spotdemo4/rust-template@v0.4.0
 ```
 
 ### Nix
