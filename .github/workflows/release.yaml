@@ -18,7 +18,7 @@ jobs:
     steps:
       - id: checkout
         name: Checkout
-        uses: spotdemo4/nix-init@94d3c2d7513280f708738b8b7d0c3689f23a83e8 # v1.24.0
+        uses: spotdemo4/nix-init@b3297f8312873ecb1f56efc86777c7a164c16e70 # v1.25.0
         with:
           app_id: ${{ vars.CLIENT_ID }}
           app_key: ${{ secrets.PRIVATE_KEY }}
