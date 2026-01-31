@@ -54,6 +54,7 @@
         devShells = {
           default = pkgs.mkShell {
             name = "dev";
+            shellHook = pkgs.shellhook.ref;
             packages = with pkgs; [
               # rust
               rustToolchain
@@ -64,9 +65,8 @@
 
               # util
               bumper
-              nix-fix-hash
+              nix-flake-release
             ];
-            shellHook = pkgs.shellhook.ref;
           };
 
           bump = pkgs.mkShell {
