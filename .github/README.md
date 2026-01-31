@@ -5,16 +5,18 @@
 [![nix](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fspotdemo4%2Frust-template%2Frefs%2Fheads%2Fmain%2Fflake.lock&query=%24.nodes.nixpkgs.original.ref&logo=nixos&logoColor=%23bac2de&label=channel&labelColor=%23313244&color=%234d6fb7)](https://nixos.org/)
 [![channel](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fspotdemo4%2Frust-template%2Frefs%2Fheads%2Fmain%2Frust-toolchain.toml&query=%24.toolchain.channel&logo=rust&logoColor=%23bac2de&label=channel&labelColor=%23313244&color=%23D34516)](https://releases.rs/)
 
-Template for starting [rust](https://rust-lang.org/) projects, part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
+template for starting [rust](https://rust-lang.org/) projects
 
-## Requirements
+part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
+
+## requirements
 
 - [nix](https://nixos.org/)
 - [direnv](https://direnv.net/) (optional)
 
-## Getting started
+## getting started
 
-Initialize direnv:
+initialize direnv:
 
 ```elm
 ln -s .envrc.project .envrc &&
@@ -27,37 +29,37 @@ or manually enter the development environment:
 nix develop
 ```
 
-### Run
+### run
 
 ```elm
 nix run #dev
 ```
 
-### Build
+### build
 
 ```elm
 nix build
 ```
 
-### Check
+### check
 
 ```elm
 nix flake check
 ```
 
-### Release
+### release
 
-Releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes.
+releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes
 
-To manually create a version bump:
+to manually create a version bump:
 
 ```elm
 bumper action.yaml .github/README.md
 ```
 
-## Use
+## use
 
-### Download
+### download
 
 | OS      | Architecture | Download                                                                                                                                           |
 | ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -67,20 +69,20 @@ bumper action.yaml .github/README.md
 | MacOS   | arm64        | [rust-template_0.4.2_darwin_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_darwin_arm64.xz)     |
 | Windows | amd64        | [rust-template_0.4.2_windows_amd64.zip](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_windows_amd64.zip) |
 
-### Docker
+### docker
 
 ```elm
 docker run ghcr.io/spotdemo4/rust-template:0.4.2
 ```
 
-### Action
+### action
 
 ```yaml
 - name: rust template
   uses: spotdemo4/rust-template@v0.4.2
 ```
 
-### Nix
+### nix
 
 ```elm
 nix run github:spotdemo4/rust-template
