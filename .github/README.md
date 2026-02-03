@@ -63,23 +63,23 @@ bumper action.yaml .github/README.md
 
 | OS      | Architecture | Download                                                                                                                                           |
 | ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux   | amd64        | [rust-template_0.4.2_linux_amd64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_linux_amd64.xz)       |
-| Linux   | arm64        | [rust-template_0.4.2_linux_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_linux_arm64.xz)       |
-| Linux   | arm          | [rust-template_0.4.2_linux_arm.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_linux_arm.xz)           |
-| MacOS   | arm64        | [rust-template_0.4.2_darwin_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_darwin_arm64.xz)     |
-| Windows | amd64        | [rust-template_0.4.2_windows_amd64.zip](https://github.com/spotdemo4/rust-template/releases/download/v0.4.2/rust-template_0.4.2_windows_amd64.zip) |
+| Linux   | amd64        | [rust-template_0.4.3_linux_amd64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.3/rust-template_0.4.3_linux_amd64.xz)       |
+| Linux   | arm64        | [rust-template_0.4.3_linux_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.3/rust-template_0.4.3_linux_arm64.xz)       |
+| Linux   | arm          | [rust-template_0.4.3_linux_arm.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.3/rust-template_0.4.3_linux_arm.xz)           |
+| MacOS   | arm64        | [rust-template_0.4.3_darwin_arm64.xz](https://github.com/spotdemo4/rust-template/releases/download/v0.4.3/rust-template_0.4.3_darwin_arm64.xz)     |
+| Windows | amd64        | [rust-template_0.4.3_windows_amd64.zip](https://github.com/spotdemo4/rust-template/releases/download/v0.4.3/rust-template_0.4.3_windows_amd64.zip) |
 
 ### docker
 
 ```elm
-docker run ghcr.io/spotdemo4/rust-template:0.4.2
+docker run ghcr.io/spotdemo4/rust-template:0.4.3
 ```
 
 ### action
 
 ```yaml
 - name: rust template
-  uses: spotdemo4/rust-template@v0.4.2
+  uses: spotdemo4/rust-template@v0.4.3
 ```
 
 ### nix
