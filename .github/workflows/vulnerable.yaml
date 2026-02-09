@@ -20,7 +20,7 @@ jobs:
       - name: Run cargo audit
         run: cargo-audit audit
 
-  nix:
+  flake:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
