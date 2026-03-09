@@ -76,12 +76,6 @@
             ];
           };
 
-          check = pkgs.mkShell {
-            packages = [
-              rustToolchain
-            ];
-          };
-
           release = pkgs.mkShell {
             packages = with pkgs; [
               flake-release
