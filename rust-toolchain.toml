@@ -1,16 +1,10 @@
 [toolchain]
-channel = "stable-2026-01-22"
-components = [
-    "cargo",
-    "clippy",
-    "rust-src",
-    "rustc",
-    "rustfmt"
-]
+channel = "stable-2026-03-05"
+components = ["cargo", "clippy", "rust-src", "rustc", "rustfmt"]
 targets = [
-    "x86_64-unknown-linux-gnu",
-    "aarch64-unknown-linux-gnu",
-    "armv7-unknown-linux-gnueabihf",
-    "aarch64-apple-darwin",
-    "x86_64-pc-windows-gnu"
+  "x86_64-unknown-linux-gnu",
+  "aarch64-unknown-linux-gnu",
+  "armv7-unknown-linux-gnueabihf",
+  "aarch64-apple-darwin",
+  "x86_64-pc-windows-gnu"
 ]

@@ -53,7 +53,6 @@
       rec {
         devShells = {
           default = pkgs.mkShell {
-            name = "dev";
             shellHook = pkgs.shellhook.ref;
             packages = with pkgs; [
               # rust
@@ -62,6 +61,7 @@
               # formatters
               nixfmt
               prettier
+              tombi
 
               # util
               bumper
@@ -70,7 +70,6 @@
           };
 
           bump = pkgs.mkShell {
-            name = "bump";
             packages = with pkgs; [
               bumper
               rustToolchain
@@ -78,14 +77,12 @@
           };
 
           check = pkgs.mkShell {
-            name = "check";
             packages = [
               rustToolchain
             ];
           };
 
           release = pkgs.mkShell {
-            name = "release";
             packages = with pkgs; [
               flake-release
               rustToolchain
@@ -93,7 +90,6 @@
           };
 
           update = pkgs.mkShell {
-            name = "update";
             packages = with pkgs; [
               renovate
 
@@ -103,7 +99,6 @@
           };
 
           vulnerable = pkgs.mkShell {
-            name = "vulnerable";
             packages = with pkgs; [
               # rust
               cargo-audit
@@ -129,23 +124,19 @@
           };
 
           nix = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.fileFilter (file: file.hasExt "nix") ./.;
-            };
+            root = ./.;
+            filter = file: file.hasExt "nix";
             deps = with pkgs; [
-              nixfmt-tree
+              nixfmt
             ];
-            script = ''
-              treefmt --ci
+            forEach = ''
+              nixfmt --check "$file"
             '';
           };
 
           renovate = {
-            src = fs.toSource {
-              root = ./.github;
-              fileset = ./.github/renovate.json;
-            };
+            root = ./.github;
+            fileset = ./.github/renovate.json;
             deps = with pkgs; [
               renovate
             ];
@@ -155,32 +146,41 @@
           };
 
           actions = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.unions [
-                ./.github/workflows
-              ];
-            };
+            root = ./.;
+            fileset = fs.unions [
+              ./action.yaml
+              ./.github/workflows
+            ];
             deps = with pkgs; [
               action-validator
               octoscan
             ];
-            script = ''
-              action-validator **/*.yaml
-              octoscan scan .
+            forEach = ''
+              action-validator $file
+              octoscan scan $file
             '';
           };
 
           prettier = {
-            src = fs.toSource {
-              root = ./.;
-              fileset = fs.fileFilter (file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md") ./.;
-            };
+            root = ./.;
+            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
             deps = with pkgs; [
               prettier
             ];
-            script = ''
-              prettier --check .
+            forEach = ''
+              prettier --check "$file"
+            '';
+          };
+
+          tombi = {
+            root = ./.;
+            filter = file: file.hasExt "toml";
+            deps = with pkgs; [
+              tombi
+            ];
+            forEach = ''
+              tombi format --offline --check "$file"
+              tombi lint --offline --error-on-warnings "$file"
             '';
           };
         };

@@ -12,9 +12,10 @@ concurrency:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
-  check:
+  flake:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,5 +23,5 @@ jobs:
         with:
           shell: check
 
-      - name: Check
+      - name: Check flake
         run: nix flake check

@@ -3,8 +3,8 @@ name = "rust-template"
 version = "0.4.3"
 edition = "2024"
 
-[dependencies]
-
 [[bin]]
 name = "rust-template"
 path = "main.rs"
+
+[dependencies]
