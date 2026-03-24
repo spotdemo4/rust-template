@@ -28,29 +28,21 @@
 
   outputs =
     {
-      nixpkgs,
+      self,
       fenix,
       trev,
       ...
     }:
     trev.libs.mkFlake (
-      system:
+      system: init:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            fenix.overlays.default
-            trev.overlays.packages
-            trev.overlays.libs
-          ];
-        };
+        pkgs = init.appendOverlays [ fenix.overlays.default ];
         rustToolchain = pkgs.fenix.fromToolchainFile {
           file = ./rust-toolchain.toml;
           sha256 = "sha256-qqF33vNuAdU5vua96VKVIwuc43j4EFeEXbjQ6+l4mO4=";
         };
-        fs = pkgs.lib.fileset;
       in
-      rec {
+      {
         devShells = {
           default = pkgs.mkShell {
             shellHook = pkgs.shellhook.ref;
@@ -106,9 +98,9 @@
           };
         };
 
-        checks = pkgs.lib.mkChecks {
+        checks = pkgs.mkChecks {
           rust = {
-            src = packages.default;
+            src = self.packages.${system}.default;
             deps = [ rustToolchain ];
             script = ''
               cargo fmt --check
@@ -141,7 +133,7 @@
 
           actions = {
             root = ./.;
-            fileset = fs.unions [
+            fileset = pkgs.lib.fileset.unions [
               ./action.yaml
               ./.github/workflows
             ];
@@ -150,19 +142,8 @@
               octoscan
             ];
             forEach = ''
-              action-validator $file
-              octoscan scan $file
-            '';
-          };
-
-          prettier = {
-            root = ./.;
-            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
-            deps = with pkgs; [
-              prettier
-            ];
-            forEach = ''
-              prettier --check "$file"
+              action-validator "$file"
+              octoscan scan "$file"
             '';
           };
 
@@ -177,31 +158,43 @@
               tombi lint --offline --error-on-warnings "$file"
             '';
           };
+
+          prettier = {
+            root = ./.;
+            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
+            deps = with pkgs; [
+              prettier
+            ];
+            forEach = ''
+              prettier --check "$file"
+            '';
+          };
         };
 
-        apps = pkgs.lib.mkApps {
-          dev.script = "cargo run";
+        apps = pkgs.mkApps {
+          dev = "cargo run";
         };
 
-        packages =
-          with pkgs.lib;
+        packages = pkgs.mkPackages pkgs (
+          pkgs:
           let
             rustPlatform = pkgs.makeRustPlatform {
               cargo = rustToolchain;
               rustc = rustToolchain;
             };
-
-            package = rustPlatform.buildRustPackage (finalAttrs: {
+          in
+          {
+            default = rustPlatform.buildRustPackage (finalAttrs: {
               pname = "rust-template";
               version = "0.4.3";
 
-              src = fs.toSource {
+              src = pkgs.lib.fileset.toSource {
                 root = ./.;
-                fileset = fs.unions [
+                fileset = pkgs.lib.fileset.unions [
                   ./Cargo.lock
                   ./Cargo.toml
                   ./rust-toolchain.toml
-                  (fs.fileFilter (file: file.hasExt "rs") ./.)
+                  (pkgs.lib.fileset.fileFilter (file: file.hasExt "rs") ./.)
                 ];
               };
 
@@ -210,85 +203,24 @@
               meta = {
                 description = "template for rust projects";
                 mainProgram = "rust-template";
-                homepage = "https://github.com/spotdemo4/rust-template";
-                changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
                 license = pkgs.lib.licenses.mit;
                 platforms = pkgs.lib.platforms.all;
+                homepage = "https://github.com/spotdemo4/rust-template";
+                changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
+                downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
               };
             });
+          }
+        );
 
-            image = makeOverridable pkgs.dockerTools.buildLayeredImage {
-              name = package.pname;
-              tag = package.version;
-
-              contents = with pkgs; [
-                dockerTools.caCertificates
-              ];
-
-              created = "now";
-              meta = package.meta;
-
-              config = {
-                Entrypoint = [ "${meta.getExe package}" ];
-                Labels = {
-                  "org.opencontainers.image.title" = package.pname;
-                  "org.opencontainers.image.description" = package.meta.description;
-                  "org.opencontainers.image.version" = package.version;
-                  "org.opencontainers.image.source" = package.meta.homepage;
-                  "org.opencontainers.image.licenses" = package.meta.license.spdxId;
-                };
-              };
-            };
-          in
-          rec {
-            default = rust.compile {
-              inherit package;
-            };
-
-            # cross compilation
-            linux-amd64 = rust.compile {
-              inherit package;
-              target = "x86_64-unknown-linux-gnu";
-            };
-            linux-arm64 = rust.compile {
-              inherit package;
-              target = "aarch64-unknown-linux-gnu";
-            };
-            linux-arm = rust.compile {
-              inherit package;
-              target = "armv7-unknown-linux-gnueabihf";
-            };
-            darwin-arm64 = rust.compile {
-              inherit package;
-              target = "aarch64-apple-darwin";
-            };
-            windows-amd64 = rust.compile {
-              inherit package;
-              target = "x86_64-pc-windows-gnu";
-            };
-
-            # images
-            linux-amd64-image = image.override (prev: {
-              architecture = "amd64";
-              config = prev.config // {
-                Cmd = [ "${meta.getExe linux-amd64}" ];
-              };
-            });
-            linux-arm64-image = image.override (prev: {
-              architecture = "arm64";
-              config = prev.config // {
-                Cmd = [ "${meta.getExe linux-arm64}" ];
-              };
-            });
-            linux-arm-image = image.override (prev: {
-              architecture = "arm";
-              config = prev.config // {
-                Cmd = [ "${meta.getExe linux-arm}" ];
-              };
-            });
+        images = pkgs.mkImages pkgs (pkgs: {
+          default = pkgs.mkImage self.packages.${system}.default {
+            contents = with pkgs; [ dockerTools.caCertificates ];
           };
+        });
 
         formatter = pkgs.nixfmt-tree;
+        schemas = trev.schemas;
       }
     );
 }
