@@ -75,14 +75,9 @@
 
           vulnerable = pkgs.mkShell {
             packages = with pkgs; [
-              # rust
-              cargo-audit
-
-              # flake
-              flake-checker
-
-              # actions
-              octoscan
+              cargo-audit # rust
+              flake-checker # flake
+              octoscan # actions
             ];
           };
         };
