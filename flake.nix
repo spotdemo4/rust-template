@@ -165,7 +165,7 @@
         packages = pkgs.mkPackages pkgs (pkgs: {
           default = pkgs.rustPlatform.buildRustPackage (finalAttrs: {
             pname = "rust-template";
-            version = "0.4.3";
+            version = "0.4.4";
 
             src = pkgs.lib.fileset.toSource {
               root = ./.;

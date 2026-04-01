@@ -4,4 +4,4 @@ author: trev
 
 runs:
   using: docker
-  image: docker://ghcr.io/spotdemo4/rust-template:0.4.3
+  image: docker://ghcr.io/spotdemo4/rust-template:0.4.4
