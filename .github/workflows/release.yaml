@@ -14,7 +14,7 @@ permissions:
   packages: write
 
 jobs:
-  release:
+  linux:
     runs-on: ubuntu-latest
     steps:
       - id: init
@@ -42,3 +42,26 @@ jobs:
             images.x86_64-linux.default.x86_64-linux
             images.x86_64-linux.default.aarch64-linux
             images.x86_64-linux.default.armv7l-linux
+
+  darwin:
+    runs-on: macos-latest
+    steps:
+      - id: init
+        name: Initialize
+        uses: spotdemo4/nix-init@32b128f67703e246a0895d72d65ae455bf38d559 # v1.41.0
+        with:
+          app_id: ${{ vars.CLIENT_ID }}
+          app_key: ${{ secrets.PRIVATE_KEY }}
+          fetch_depth: 0
+          shell: release
+
+      - name: Release to GitHub
+        run: flake-release
+        env:
+          GITHUB_TOKEN: ${{ steps.init.outputs.token }}
+          REGISTRY: ghcr.io
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGES: |-
+            packages.aarch64-darwin.default.aarch64-darwin
+            packages.aarch64-darwin.default.x86_64-darwin
