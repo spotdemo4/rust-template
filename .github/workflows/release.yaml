@@ -17,8 +17,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - id: checkout
-        name: Checkout
+      - id: init
+        name: Initialize
         uses: spotdemo4/nix-init@32b128f67703e246a0895d72d65ae455bf38d559 # v1.41.0
         with:
           app_id: ${{ vars.CLIENT_ID }}
@@ -26,10 +26,19 @@ jobs:
           fetch_depth: 0
           shell: release
 
-      - name: Run nix-release
+      - name: Release to GitHub
         run: flake-release
         env:
-          GITHUB_TOKEN: ${{ steps.checkout.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.init.outputs.token }}
           REGISTRY: ghcr.io
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGES: |-
+            packages.x86_64-linux.default.x86_64-linux
+            packages.x86_64-linux.default.aarch64-linux
+            packages.x86_64-linux.default.armv7l-linux
+            packages.x86_64-linux.default.armv6l-linux
+            packages.x86_64-linux.default.x86_64-windows
+            images.x86_64-linux.default.x86_64-linux
+            images.x86_64-linux.default.aarch64-linux
+            images.x86_64-linux.default.armv7l-linux
