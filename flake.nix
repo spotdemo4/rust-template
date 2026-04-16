@@ -162,17 +162,17 @@
           dev = "cargo run";
         };
 
-        packages = pkgs.mkPackages pkgs (pkgs: {
-          default = pkgs.rustPlatform.buildRustPackage (finalAttrs: {
+        packages.default = pkgs.rustPlatform.buildRustPackage (
+          final: with pkgs.lib; {
             pname = "rust-template";
             version = "0.4.5";
 
-            src = pkgs.lib.fileset.toSource {
+            src = fileset.toSource {
               root = ./.;
-              fileset = pkgs.lib.fileset.unions [
+              fileset = fileset.unions [
                 ./Cargo.lock
                 ./Cargo.toml
-                (pkgs.lib.fileset.fileFilter (file: file.hasExt "rs") ./.)
+                (fileset.fileFilter (file: file.hasExt "rs") ./.)
               ];
             };
             cargoLock.lockFile = ./Cargo.lock;
@@ -180,20 +180,19 @@
             meta = {
               mainProgram = "rust-template";
               description = "Template for Rust projects";
-              license = pkgs.lib.licenses.mit;
-              platforms = pkgs.lib.platforms.all;
+              license = licenses.mit;
+              platforms = platforms.all;
               homepage = "https://github.com/spotdemo4/rust-template";
-              changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
-              downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${finalAttrs.version}";
+              changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
+              downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
             };
-          });
-        });
+          }
+        );
 
-        images = pkgs.mkImages pkgs (pkgs: {
-          default = pkgs.mkImage self.packages.${system}.default {
-            contents = with pkgs; [ dockerTools.caCertificates ];
-          };
-        });
+        images.default = pkgs.mkImage {
+          src = self.packages.${system}.default;
+          contents = with pkgs; [ dockerTools.caCertificates ];
+        };
 
         formatter = pkgs.nixfmt-tree;
         schemas = trev.schemas;
