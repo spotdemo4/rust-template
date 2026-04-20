@@ -57,16 +57,16 @@ releases are created automatically for [significant](https://www.conventionalcom
 
 | OS      | Architecture | Download                                                                                                                                           |
 | ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux   | amd64        | [rust-template_0.4.6_linux_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.6/rust-template_0.4.6_linux_amd64)             |
-| Linux   | arm64        | [rust-template_0.4.6_linux_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.6/rust-template_0.4.6_linux_arm64)             |
-| Linux   | arm          | [rust-template_0.4.6_linux_arm](https://github.com/spotdemo4/rust-template/releases/download/v0.4.6/rust-template_0.4.6_linux_arm)                 |
-| MacOS   | arm64        | [rust-template_0.4.6_darwin_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.6/rust-template_0.4.6_darwin_arm64)           |
-| Windows | amd64        | [rust-template_0.4.6_windows_amd64.exe](https://github.com/spotdemo4/rust-template/releases/download/v0.4.6/rust-template_0.4.6_windows_amd64.exe) |
+| Linux   | amd64        | [rust-template_0.4.7_linux_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.7/rust-template_0.4.7_linux_amd64)             |
+| Linux   | arm64        | [rust-template_0.4.7_linux_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.7/rust-template_0.4.7_linux_arm64)             |
+| Linux   | arm          | [rust-template_0.4.7_linux_arm](https://github.com/spotdemo4/rust-template/releases/download/v0.4.7/rust-template_0.4.7_linux_arm)                 |
+| MacOS   | arm64        | [rust-template_0.4.7_darwin_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.4.7/rust-template_0.4.7_darwin_arm64)           |
+| Windows | amd64        | [rust-template_0.4.7_windows_amd64.exe](https://github.com/spotdemo4/rust-template/releases/download/v0.4.7/rust-template_0.4.7_windows_amd64.exe) |
 
 ### docker
 
 ```elm
-docker run ghcr.io/spotdemo4/rust-template:0.4.6
+docker run ghcr.io/spotdemo4/rust-template:0.4.7
 ```
 
 ### nix
@@ -78,5 +78,5 @@ nix run github:spotdemo4/rust-template
 ### action
 
 ```yaml
-- uses: spotdemo4/rust-template@v0.4.6
+- uses: spotdemo4/rust-template@v0.4.7
 ```
