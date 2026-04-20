@@ -4,11 +4,9 @@
   nixConfig = {
     extra-substituters = [
       "https://nix.trev.zip"
-      "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
       "trev:I39N/EsnHkvfmsbx8RUW+ia5dOzojTQNCTzKYij1chU="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
 
@@ -50,7 +48,6 @@
 
               # util
               bumper
-              flake-release
             ];
           };
 
@@ -82,10 +79,14 @@
           };
         };
 
+        apps = pkgs.mkApps {
+          default = "cargo run";
+        };
+
         checks = pkgs.mkChecks {
           rust = {
             src = self.packages.${system}.default;
-            deps = with pkgs; [
+            packages = with pkgs; [
               rustfmt
               clippy
             ];
@@ -99,7 +100,7 @@
           nix = {
             root = ./.;
             filter = file: file.hasExt "nix";
-            deps = with pkgs; [
+            packages = with pkgs; [
               nixfmt
             ];
             forEach = ''
@@ -110,7 +111,7 @@
           renovate = {
             root = ./.github;
             fileset = ./.github/renovate.json;
-            deps = with pkgs; [
+            packages = with pkgs; [
               renovate
             ];
             script = ''
@@ -120,11 +121,11 @@
 
           actions = {
             root = ./.;
-            fileset = pkgs.lib.fileset.unions [
+            files = [
               ./action.yaml
               ./.github/workflows
             ];
-            deps = with pkgs; [
+            packages = with pkgs; [
               action-validator
               octoscan
             ];
@@ -137,7 +138,7 @@
           tombi = {
             root = ./.;
             filter = file: file.hasExt "toml";
-            deps = with pkgs; [
+            packages = with pkgs; [
               tombi
             ];
             forEach = ''
@@ -149,7 +150,7 @@
           prettier = {
             root = ./.;
             filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
-            deps = with pkgs; [
+            packages = with pkgs; [
               prettier
             ];
             forEach = ''
@@ -158,8 +159,14 @@
           };
         };
 
-        apps = pkgs.mkApps {
-          dev = "cargo run";
+        formatter = pkgs.treefmt.withConfig {
+          configFile = ./treefmt.toml;
+          runtimeInputs = with pkgs; [
+            rustfmt
+            nixfmt
+            tombi
+            prettier
+          ];
         };
 
         packages.default = pkgs.rustPlatform.buildRustPackage (
@@ -194,7 +201,6 @@
           contents = with pkgs; [ dockerTools.caCertificates ];
         };
 
-        formatter = pkgs.nixfmt-tree;
         schemas = trev.schemas;
       }
     );
