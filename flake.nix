@@ -30,6 +30,7 @@
       system: pkgs: {
         devShells = {
           default = pkgs.mkShell {
+            RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
             shellHook = pkgs.shellhook.ref;
             packages = with pkgs; [
               # rust
@@ -41,10 +42,11 @@
               cargo-audit
 
               # format
+              treefmt
               rustfmt
               nixfmt
-              prettier
               tombi
+              prettier
 
               # util
               bumper
@@ -120,11 +122,8 @@
           };
 
           actions = {
-            root = ./.;
-            files = [
-              ./action.yaml
-              ./.github/workflows
-            ];
+            root = ./.github/workflows;
+            filter = file: file.hasExt "yaml";
             packages = with pkgs; [
               action-validator
               zizmor

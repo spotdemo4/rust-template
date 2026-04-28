@@ -46,7 +46,7 @@ nix build
 ### release
 
 ```elm
-bumper "action.yaml" ".github/README.md"
+bumper ".github/README.md"
 ```
 
 releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes
@@ -74,10 +74,4 @@ docker run ghcr.io/spotdemo4/rust-template:0.4.7
 
 ```elm
 nix run github:spotdemo4/rust-template
-```
-
-### action
-
-```yaml
-- uses: spotdemo4/rust-template@v0.4.7
 ```
