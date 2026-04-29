@@ -2,9 +2,9 @@
 /.envrc
 /docker-compose*
 
-# build
-/target/
-
 # nix
 /result*
 /.direnv/
+
+# rust
+/target/
