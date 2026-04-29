@@ -87,6 +87,7 @@
         # nix run [#...]
         apps = pkgs.mkApps {
           default = "cargo run";
+          test = "cargo test";
         };
 
         # nix build [#...]
