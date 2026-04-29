@@ -95,7 +95,7 @@
           default = pkgs.rustPlatform.buildRustPackage (
             final: with pkgs.lib; {
               pname = "rust-template";
-              version = "0.4.8";
+              version = "0.5.0";
 
               src = fileset.toSource {
                 root = ./.;
