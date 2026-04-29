@@ -101,6 +101,8 @@
                 fileset = fileset.unions [
                   ./Cargo.lock
                   ./Cargo.toml
+                  ./LICENSE
+                  ./README.md
                   (fileset.fileFilter (file: file.hasExt "rs") ./.)
                 ];
               };

@@ -46,7 +46,7 @@ nix build
 ### release
 
 ```elm
-bumper ".github/README.md"
+bumper "README.md"
 ```
 
 releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes
