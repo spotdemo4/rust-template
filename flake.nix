@@ -28,6 +28,8 @@
     }:
     trev.libs.mkFlake (
       system: pkgs: {
+
+        # nix develop [#...]
         devShells = {
           default = pkgs.mkShell {
             RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
@@ -40,13 +42,13 @@
               # lint
               clippy
               cargo-audit
+              tombi
 
               # format
               treefmt
-              rustfmt
-              nixfmt
-              tombi
               prettier
+              nixfmt
+              rustfmt
 
               # util
               bumper
@@ -74,28 +76,77 @@
 
           vulnerable = pkgs.mkShell {
             packages = with pkgs; [
-              cargo-audit # rust
-              flake-checker # flake
+              flake-checker # nix
               zizmor # actions
+              cargo-audit # rust
             ];
           };
         };
 
+        # nix run [#...]
         apps = pkgs.mkApps {
           default = "cargo run";
         };
 
-        checks = pkgs.mkChecks {
-          rust = {
+        # nix build [#...]
+        packages = {
+          default = pkgs.rustPlatform.buildRustPackage (
+            final: with pkgs.lib; {
+              pname = "rust-template";
+              version = "0.4.8";
+
+              src = fileset.toSource {
+                root = ./.;
+                fileset = fileset.unions [
+                  ./Cargo.lock
+                  ./Cargo.toml
+                  (fileset.fileFilter (file: file.hasExt "rs") ./.)
+                ];
+              };
+              cargoLock.lockFile = ./Cargo.lock;
+
+              meta = {
+                mainProgram = "rust-template";
+                description = "Template for Rust projects";
+                license = licenses.mit;
+                platforms = platforms.all;
+                homepage = "https://github.com/spotdemo4/rust-template";
+                changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
+                downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
+              };
+            }
+          );
+        };
+
+        # nix build #images.[...]
+        images = {
+          default = pkgs.mkImage {
             src = self.packages.${system}.default;
+            contents = with pkgs; [ dockerTools.caCertificates ];
+          };
+        };
+
+        # nix fmt
+        formatter = pkgs.treefmt.withConfig {
+          configFile = ./treefmt.toml;
+          runtimeInputs = with pkgs; [
+            rustfmt
+            nixfmt
+            tombi
+            prettier
+          ];
+        };
+
+        # nix flake check
+        checks = pkgs.mkChecks {
+          prettier = {
+            root = ./.;
+            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
             packages = with pkgs; [
-              rustfmt
-              clippy
+              prettier
             ];
-            script = ''
-              cargo test --offline
-              cargo fmt --check
-              cargo clippy --offline -- -D warnings
+            forEach = ''
+              prettier --check "$file"
             '';
           };
 
@@ -107,17 +158,6 @@
             ];
             forEach = ''
               nixfmt --check "$file"
-            '';
-          };
-
-          renovate = {
-            root = ./.github;
-            fileset = ./.github/renovate.json;
-            packages = with pkgs; [
-              renovate
-            ];
-            script = ''
-              renovate-config-validator renovate.json
             '';
           };
 
@@ -134,6 +174,30 @@
             '';
           };
 
+          renovate = {
+            root = ./.github;
+            fileset = ./.github/renovate.json;
+            packages = with pkgs; [
+              renovate
+            ];
+            script = ''
+              renovate-config-validator renovate.json
+            '';
+          };
+
+          rust = {
+            src = self.packages.${system}.default;
+            packages = with pkgs; [
+              rustfmt
+              clippy
+            ];
+            script = ''
+              cargo test --offline
+              cargo fmt --check
+              cargo clippy --offline -- -D warnings
+            '';
+          };
+
           tombi = {
             root = ./.;
             filter = file: file.hasExt "toml";
@@ -145,62 +209,7 @@
               tombi lint --offline --error-on-warnings "$file"
             '';
           };
-
-          prettier = {
-            root = ./.;
-            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
-            packages = with pkgs; [
-              prettier
-            ];
-            forEach = ''
-              prettier --check "$file"
-            '';
-          };
         };
-
-        formatter = pkgs.treefmt.withConfig {
-          configFile = ./treefmt.toml;
-          runtimeInputs = with pkgs; [
-            rustfmt
-            nixfmt
-            tombi
-            prettier
-          ];
-        };
-
-        packages.default = pkgs.rustPlatform.buildRustPackage (
-          final: with pkgs.lib; {
-            pname = "rust-template";
-            version = "0.4.8";
-
-            src = fileset.toSource {
-              root = ./.;
-              fileset = fileset.unions [
-                ./Cargo.lock
-                ./Cargo.toml
-                (fileset.fileFilter (file: file.hasExt "rs") ./.)
-              ];
-            };
-            cargoLock.lockFile = ./Cargo.lock;
-
-            meta = {
-              mainProgram = "rust-template";
-              description = "Template for Rust projects";
-              license = licenses.mit;
-              platforms = platforms.all;
-              homepage = "https://github.com/spotdemo4/rust-template";
-              changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
-              downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
-            };
-          }
-        );
-
-        images.default = pkgs.mkImage {
-          src = self.packages.${system}.default;
-          contents = with pkgs; [ dockerTools.caCertificates ];
-        };
-
-        schemas = trev.schemas;
       }
     );
 }

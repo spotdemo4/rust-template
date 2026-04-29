@@ -1,4 +1,5 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "files.associations": {
     "renovate.json": "jsonc",
@@ -6,21 +7,16 @@
     ".envrc": "dotenv"
   },
 
-  // rust
-  "[rust]": {
-    "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  },
-
   // nix
-  "nix.enableLanguageServer": true,
-  "nix.serverPath": "nixd",
   "[nix]": {
     "editor.defaultFormatter": "jnoortheen.nix-ide"
   },
-
-  // toml
-  "[toml]": {
-    "editor.defaultFormatter": "tombi-toml.tombi"
+  "nix.serverSettings": {
+    "nixd": {
+      "nixpkgs": {
+        "expr": "(builtins.getFlake (builtins.toString ./.)).outputs.nixpkgs.${builtins.currentSystem}"
+      }
+    }
   },
 
   // json
@@ -28,6 +24,13 @@
     "https://docs.renovatebot.com/": true
   },
 
-  // default
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  // rust
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+
+  // toml
+  "[toml]": {
+    "editor.defaultFormatter": "tombi-toml.tombi"
+  }
 }
