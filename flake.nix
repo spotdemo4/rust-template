@@ -134,10 +134,10 @@
         formatter = pkgs.treefmt.withConfig {
           configFile = ./treefmt.toml;
           runtimeInputs = with pkgs; [
-            rustfmt
-            nixfmt
-            tombi
             prettier
+            nixfmt
+            rustfmt
+            tombi
           ];
         };
 
