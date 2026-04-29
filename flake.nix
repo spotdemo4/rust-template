@@ -40,6 +40,7 @@
               cargo
 
               # lint
+              nixd
               clippy
               cargo-audit
               tombi
