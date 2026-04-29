@@ -6,11 +6,28 @@
     ".envrc.project": "dotenv",
     ".envrc": "dotenv"
   },
+  "explorer.fileNesting.patterns": {
+    ".envrc.project": ".envrc",
+    "flake.nix": "flake.lock,treefmt.toml",
+    "README.md": "*.md,LICENSE"
+  },
+  "json.schemaDownload.trustedDomains": {
+    "https://docs.renovatebot.com/": true
+  },
+  "chat.tools.terminal.autoApprove": {
+    "treefmt": true,
+
+    // nix
+    "nix build": true,
+    "nix flake check": true,
+
+    // rust
+    "cargo build": true,
+    "cargo check": true,
+    "cargo clippy": true
+  },
 
   // nix
-  "[nix]": {
-    "editor.defaultFormatter": "jnoortheen.nix-ide"
-  },
   "nix.enableLanguageServer": true,
   "nix.serverPath": "nixd",
   "nix.serverSettings": {
@@ -20,10 +37,8 @@
       }
     }
   },
-
-  // json
-  "json.schemaDownload.trustedDomains": {
-    "https://docs.renovatebot.com/": true
+  "[nix]": {
+    "editor.defaultFormatter": "jnoortheen.nix-ide"
   },
 
   // rust
