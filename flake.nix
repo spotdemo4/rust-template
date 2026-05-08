@@ -40,16 +40,16 @@
               cargo
 
               # lint
-              nixd
               clippy
               cargo-audit
-              tombi
+              nixd
+              nil
 
               # format
-              treefmt
-              prettier
-              nixfmt
               rustfmt
+              nixfmt
+              oxfmt
+              treefmt
 
               # util
               bumper
@@ -109,6 +109,16 @@
               };
               cargoLock.lockFile = ./Cargo.lock;
 
+              nativeCheckInputs = with pkgs; [
+                rustfmt
+                clippy
+              ];
+              checkPhase = ''
+                cargo test --offline
+                cargo fmt --check
+                cargo clippy --offline -- -D warnings
+              '';
+
               meta = {
                 mainProgram = "rust-template";
                 description = "Template for Rust projects";
@@ -134,23 +144,18 @@
         formatter = pkgs.treefmt.withConfig {
           configFile = ./treefmt.toml;
           runtimeInputs = with pkgs; [
-            prettier
-            nixfmt
             rustfmt
-            tombi
+            nixfmt
+            oxfmt
           ];
         };
 
         # nix flake check
         checks = pkgs.mkChecks {
-          prettier = {
-            root = ./.;
-            filter = file: file.hasExt "yaml" || file.hasExt "json" || file.hasExt "md";
-            packages = with pkgs; [
-              prettier
-            ];
-            forEach = ''
-              prettier --check "$file"
+          rust = self.packages.${system}.default.overrideAttrs {
+            dontBuild = true;
+            installPhase = ''
+              touch $out
             '';
           };
 
@@ -160,8 +165,19 @@
             packages = with pkgs; [
               nixfmt
             ];
-            forEach = ''
+            script = ''
               nixfmt --check "$file"
+            '';
+          };
+
+          config = {
+            root = ./.;
+            filter = file: file.hasExt "json" || file.hasExt "yaml" || file.hasExt "toml" || file.hasExt "md";
+            packages = with pkgs; [
+              oxfmt
+            ];
+            script = ''
+              oxfmt --check
             '';
           };
 
@@ -172,7 +188,7 @@
               action-validator
               zizmor
             ];
-            forEach = ''
+            script = ''
               action-validator "$file"
               zizmor --offline "$file"
             '';
@@ -186,31 +202,6 @@
             ];
             script = ''
               renovate-config-validator renovate.json
-            '';
-          };
-
-          rust = {
-            src = self.packages.${system}.default;
-            packages = with pkgs; [
-              rustfmt
-              clippy
-            ];
-            script = ''
-              cargo test --offline
-              cargo fmt --check
-              cargo clippy --offline -- -D warnings
-            '';
-          };
-
-          tombi = {
-            root = ./.;
-            filter = file: file.hasExt "toml";
-            packages = with pkgs; [
-              tombi
-            ];
-            forEach = ''
-              tombi format --offline --check "$file"
-              tombi lint --offline --error-on-warnings "$file"
             '';
           };
         };
