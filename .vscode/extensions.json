@@ -1,8 +1,8 @@
 {
   "recommendations": [
     "rust-lang.rust-analyzer",
-    "oxc.oxc-vscode",
     "jnoortheen.nix-ide",
+    "oxc.oxc-vscode",
     "tombi-toml.tombi"
   ]
 }
