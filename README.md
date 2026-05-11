@@ -57,17 +57,17 @@ releases are created automatically for [significant](https://www.conventionalcom
 
 | OS      | Architecture | Download                                                                                                                                           |
 | ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux   | amd64        | [rust-template_0.6.1_linux_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_linux_amd64)             |
-| Linux   | arm64        | [rust-template_0.6.1_linux_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_linux_arm64)             |
-| Linux   | arm          | [rust-template_0.6.1_linux_arm](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_linux_arm)                 |
-| MacOS   | amd64        | [rust-template_0.6.1_darwin_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_darwin_amd64)           |
-| MacOS   | arm64        | [rust-template_0.6.1_darwin_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_darwin_arm64)           |
-| Windows | amd64        | [rust-template_0.6.1_windows_amd64.exe](https://github.com/spotdemo4/rust-template/releases/download/v0.6.1/rust-template_0.6.1_windows_amd64.exe) |
+| Linux   | amd64        | [rust-template_0.6.2_linux_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_amd64)             |
+| Linux   | arm64        | [rust-template_0.6.2_linux_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_arm64)             |
+| Linux   | arm          | [rust-template_0.6.2_linux_arm](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_arm)                 |
+| MacOS   | amd64        | [rust-template_0.6.2_darwin_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_darwin_amd64)           |
+| MacOS   | arm64        | [rust-template_0.6.2_darwin_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_darwin_arm64)           |
+| Windows | amd64        | [rust-template_0.6.2_windows_amd64.exe](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_windows_amd64.exe) |
 
 ### docker
 
 ```elm
-docker run ghcr.io/spotdemo4/rust-template:0.6.1
+docker run ghcr.io/spotdemo4/rust-template:0.6.2
 ```
 
 ### nix
