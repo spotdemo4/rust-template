@@ -114,8 +114,8 @@
                 clippy
               ];
               checkPhase = ''
-                cargo test --offline
                 cargo fmt --check
+                cargo test --offline
                 cargo clippy --offline -- -D warnings
               '';
 
