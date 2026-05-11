@@ -13,8 +13,8 @@
   inputs = {
     systems.url = "github:spotdemo4/systems";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    trev = {
-      url = "github:spotdemo4/nur";
+    trevpkgs = {
+      url = "github:spotdemo4/trevpkgs";
       inputs.systems.follows = "systems";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -23,10 +23,10 @@
   outputs =
     {
       self,
-      trev,
+      trevpkgs,
       ...
     }:
-    trev.libs.mkFlake (
+    trevpkgs.libs.mkFlake (
       system: pkgs: {
 
         # nix develop [#...]
@@ -170,17 +170,6 @@
             '';
           };
 
-          config = {
-            root = ./.;
-            filter = file: file.hasExt "json" || file.hasExt "yaml" || file.hasExt "toml" || file.hasExt "md";
-            packages = with pkgs; [
-              oxfmt
-            ];
-            script = ''
-              oxfmt --check
-            '';
-          };
-
           actions = {
             root = ./.github/workflows;
             filter = file: file.hasExt "yaml";
@@ -202,6 +191,17 @@
             ];
             script = ''
               renovate-config-validator renovate.json
+            '';
+          };
+
+          config = {
+            root = ./.;
+            filter = file: file.hasExt "json" || file.hasExt "yaml" || file.hasExt "toml" || file.hasExt "md";
+            packages = with pkgs; [
+              oxfmt
+            ];
+            script = ''
+              oxfmt --check
             '';
           };
         };
