@@ -62,7 +62,7 @@ cargo install rust-template \
 ### docker
 
 ```sh
-docker run trev.zip/llc/rust:latest
+docker run trev.zip/template/rust:latest
 ```
 
 ### nix
