@@ -14,37 +14,37 @@ part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
 
 ## getting started
 
-```elm
+```sh
 nix develop
 ```
 
 ### run
 
-```elm
+```sh
 nix run #dev
 ```
 
 ### format
 
-```elm
+```sh
 nix fmt
 ```
 
 ### check
 
-```elm
+```sh
 nix flake check
 ```
 
 ### build
 
-```elm
+```sh
 nix build
 ```
 
 ### release
 
-```elm
+```sh
 bumper "README.md"
 ```
 
@@ -54,13 +54,13 @@ releases are created automatically for [significant](https://www.conventionalcom
 
 ### docker
 
-```elm
+```sh
 docker run ghcr.io/spotdemo4/rust-template:latest
 ```
 
 ### nix
 
-```elm
+```sh
 nix run github:spotdemo4/rust-template
 ```
 
