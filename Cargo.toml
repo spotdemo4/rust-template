@@ -5,7 +5,7 @@ edition = "2024"
 rust-version = "1.94.1"
 description = "template for rust"
 readme = "README.md"
-repository = "https://trev.zip/llc/rust"
+repository = "https://trev.zip/template/rust"
 license-file = "LICENSE"
 
 [lints.clippy]
