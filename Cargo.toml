@@ -2,7 +2,7 @@
 name = "rust-template"
 version = "0.7.1"
 edition = "2024"
-rust-version = "1.94.1"
+rust-version = "1.95.0"
 description = "template for rust"
 readme = "README.md"
 repository = "https://trev.zip/template/rust"
