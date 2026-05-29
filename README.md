@@ -55,13 +55,13 @@ releases are created automatically for [significant](https://www.conventionalcom
 ### docker
 
 ```sh
-docker run ghcr.io/spotdemo4/rust-template:latest
+docker run trev.zip/llc/rust:latest
 ```
 
 ### nix
 
 ```sh
-nix run github:spotdemo4/rust-template
+nix run git+https://trev.zip/llc/rust.git
 ```
 
 ### download
