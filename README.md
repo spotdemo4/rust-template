@@ -52,21 +52,10 @@ releases are created automatically for [significant](https://www.conventionalcom
 
 ## use
 
-### download
-
-| OS      | Architecture | Download                                                                                                                                           |
-| ------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Linux   | amd64        | [rust-template_0.6.2_linux_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_amd64)             |
-| Linux   | arm64        | [rust-template_0.6.2_linux_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_arm64)             |
-| Linux   | arm          | [rust-template_0.6.2_linux_arm](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_linux_arm)                 |
-| MacOS   | amd64        | [rust-template_0.6.2_darwin_amd64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_darwin_amd64)           |
-| MacOS   | arm64        | [rust-template_0.6.2_darwin_arm64](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_darwin_arm64)           |
-| Windows | amd64        | [rust-template_0.6.2_windows_amd64.exe](https://github.com/spotdemo4/rust-template/releases/download/v0.6.2/rust-template_0.6.2_windows_amd64.exe) |
-
 ### docker
 
 ```elm
-docker run ghcr.io/spotdemo4/rust-template:0.6.2
+docker run ghcr.io/spotdemo4/rust-template:latest
 ```
 
 ### nix
@@ -74,3 +63,12 @@ docker run ghcr.io/spotdemo4/rust-template:0.6.2
 ```elm
 nix run github:spotdemo4/rust-template
 ```
+
+### download
+
+https://trev.zip/llc/rust/releases
+
+---
+
+> [!NOTE]
+> This repository is mirrored to GitHub from [trev.zip](https://trev.zip/llc/rust)
