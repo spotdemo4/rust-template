@@ -52,6 +52,13 @@ releases are created automatically for [significant](https://www.conventionalcom
 
 ## use
 
+### cargo
+
+```sh
+cargo install rust-template \
+  --index sparse+https://trev.zip/api/packages/template/cargo/
+```
+
 ### docker
 
 ```sh
