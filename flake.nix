@@ -53,6 +53,7 @@
 
               # util
               bumper
+              fix-hash
             ];
           };
 
@@ -65,6 +66,8 @@
           release = pkgs.mkShell {
             packages = with pkgs; [
               flake-release
+              rustc
+              cargo
             ];
           };
 
@@ -77,9 +80,9 @@
 
           vulnerable = pkgs.mkShell {
             packages = with pkgs; [
+              cargo-audit # rust
               flake-checker # nix
               zizmor # actions
-              cargo-audit # rust
             ];
           };
         };
