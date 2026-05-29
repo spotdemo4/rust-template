@@ -1,5 +1,5 @@
 {
-  description = "rust template";
+  description = "template for rust";
 
   nixConfig = {
     extra-substituters = [
@@ -121,12 +121,12 @@
 
               meta = {
                 mainProgram = "rust-template";
-                description = "Template for Rust projects";
+                description = "template for rust";
                 license = licenses.mit;
                 platforms = platforms.all;
-                homepage = "https://github.com/spotdemo4/rust-template";
-                changelog = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
-                downloadPage = "https://github.com/spotdemo4/rust-template/releases/tag/v${final.version}";
+                homepage = "https://trev.zip/trev/rust";
+                changelog = "https://trev.zip/trev/rust/releases/tag/v${final.version}";
+                downloadPage = "https://trev.zip/trev/rust/releases/releases/tag/v${final.version}";
               };
             }
           );
@@ -171,14 +171,16 @@
           };
 
           actions = {
-            root = ./.github/workflows;
+            root = ./.;
+            files = [
+              ./.forgejo/workflows
+              ./.github/workflows
+            ];
             filter = file: file.hasExt "yaml";
             packages = with pkgs; [
-              action-validator
               zizmor
             ];
             script = ''
-              action-validator "$file"
               zizmor --offline "$file"
             '';
           };
