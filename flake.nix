@@ -124,9 +124,9 @@
                 description = "template for rust";
                 license = licenses.mit;
                 platforms = platforms.all;
-                homepage = "https://trev.zip/trev/rust";
-                changelog = "https://trev.zip/trev/rust/releases/tag/v${final.version}";
-                downloadPage = "https://trev.zip/trev/rust/releases/releases/tag/v${final.version}";
+                homepage = "https://trev.zip/llc/rust";
+                changelog = "https://trev.zip/llc/rust/releases/tag/v${final.version}";
+                downloadPage = "https://trev.zip/llc/rust/releases/releases/tag/v${final.version}";
               };
             }
           );
