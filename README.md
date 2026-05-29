@@ -67,8 +67,3 @@ nix run git+https://trev.zip/llc/rust.git
 ### download
 
 https://trev.zip/llc/rust/releases
-
----
-
-> [!NOTE]
-> This repository is mirrored to GitHub from [trev.zip](https://trev.zip/llc/rust)
