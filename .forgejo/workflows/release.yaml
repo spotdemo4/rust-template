@@ -16,9 +16,9 @@ jobs:
       - name: Initialize
         uses: spotdemo4/nix-init@d4c575df910b35487710048791c2ae11eefbac3e # v1.48.0
         with:
-          token: ${{ secrets.DOCTOR_TOKEN }}
           github_token: ${{ secrets.GH_TOKEN }}
           niks3_url: https://niks3.trev.zip
+          token: ${{ secrets.DOCTOR_TOKEN }}
           fetch_depth: 0
           shell: release
 
@@ -41,5 +41,5 @@ jobs:
       - name: Publish crate to Forgejo
         run: cargo publish --registry forgejo --locked # zizmor: ignore[use-trusted-publishing]
         env:
-          CARGO_REGISTRIES_FORGEJO_INDEX: sparse+https://trev.zip/api/packages/template/cargo/
+          CARGO_REGISTRIES_FORGEJO_INDEX: sparse+${{ forgejo.SERVER_URL }}/api/packages/${{ forgejo.REPOSITORY_OWNER }}/cargo/
           CARGO_REGISTRIES_FORGEJO_TOKEN: Bearer ${{ secrets.PACKAGE_TOKEN }}
