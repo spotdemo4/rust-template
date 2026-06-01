@@ -1,5 +1,5 @@
 {
-  description = "template for rust";
+  description = "rust template";
 
   nixConfig = {
     extra-substituters = [
@@ -124,12 +124,12 @@
 
               meta = {
                 mainProgram = "rust-template";
-                description = "template for rust";
+                description = "rust template";
                 license = licenses.mit;
                 platforms = platforms.all;
                 homepage = "https://trev.zip/template/rust";
-                changelog = "https://trev.zip/template/rust/releases/tag/v${final.version}";
-                downloadPage = "https://trev.zip/template/rust/releases/releases/tag/v${final.version}";
+                changelog = "https://trev.zip/template/rust/releases";
+                downloadPage = "https://trev.zip/template/rust/releases/tag/v${final.version}";
               };
             }
           );
