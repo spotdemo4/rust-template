@@ -38,6 +38,7 @@
               # rust
               rustc
               cargo
+              rust-analyzer
 
               # lint
               clippy
