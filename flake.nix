@@ -90,8 +90,20 @@
 
         # nix run [#...]
         apps = pkgs.mkApps {
-          dev = "cargo run";
-          test = "cargo test";
+          dev = {
+            script = "cargo run";
+            packages = with pkgs; [
+              cargo
+              rustc
+            ];
+          };
+          test = {
+            script = "cargo test";
+            packages = with pkgs; [
+              cargo
+              rustc
+            ];
+          };
         };
 
         # nix build [#...]
