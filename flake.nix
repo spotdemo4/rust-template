@@ -39,20 +39,22 @@
               rustc
               cargo
               rust-analyzer
-
-              # lint
+              rustfmt
               clippy
               cargo-audit
+
+              vscode-json-languageserver # json
+              yaml-language-server # yaml
+              tombi # toml
+              oxfmt # format
+
+              # nix
               nixd
               nil
-
-              # format
-              rustfmt
               nixfmt
-              oxfmt
-              treefmt
 
               # util
+              treefmt
               bumper
               fix-hash
             ];
