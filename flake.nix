@@ -90,24 +90,6 @@
           };
         };
 
-        # nix run [#...]
-        apps = pkgs.mkApps {
-          dev = {
-            script = "cargo run";
-            packages = with pkgs; [
-              cargo
-              rustc
-            ];
-          };
-          test = {
-            script = "cargo test";
-            packages = with pkgs; [
-              cargo
-              rustc
-            ];
-          };
-        };
-
         # nix build [#...]
         packages = {
           default = pkgs.rustPlatform.buildRustPackage (
