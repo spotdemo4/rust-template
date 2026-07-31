@@ -50,7 +50,6 @@
 
               # nix
               nixd
-              nil
               nixfmt
 
               # util
