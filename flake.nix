@@ -109,11 +109,9 @@
               cargoLock.lockFile = ./Cargo.lock;
 
               nativeCheckInputs = with pkgs; [
-                rustfmt
                 clippy
               ];
               checkPhase = ''
-                cargo fmt --check
                 cargo test --offline
                 cargo clippy --offline -- -D warnings
               '';
@@ -155,6 +153,22 @@
             dontBuild = true;
             installPhase = ''
               touch $out
+            '';
+          };
+
+          rustfmt = {
+            root = ./.;
+            filter = file: file.hasExt "rs";
+            include = [
+              ./Cargo.lock
+              ./Cargo.toml
+            ];
+            packages = with pkgs; [
+              cargo
+              rustfmt
+            ];
+            script = ''
+              cargo fmt --check
             '';
           };
 
