@@ -112,8 +112,10 @@
                 clippy
               ];
               checkPhase = ''
+                runHook preCheck
                 cargo test --offline
                 cargo clippy --offline -- -D warnings
+                runHook postCheck
               '';
 
               meta = {
@@ -152,7 +154,9 @@
           rust = self.packages.${system}.default.overrideAttrs {
             dontBuild = true;
             installPhase = ''
+              runHook preInstall
               touch $out
+              runHook postInstall
             '';
           };
 
