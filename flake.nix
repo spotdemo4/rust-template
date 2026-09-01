@@ -114,7 +114,7 @@
               checkPhase = ''
                 runHook preCheck
                 cargo test --offline
-                cargo clippy --offline -- -D warnings
+                cargo clippy --offline --all-targets -- -D warnings
                 runHook postCheck
               '';
 
