@@ -28,6 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.DOCTOR_TOKEN }}
           REGISTRY: trev.zip
           REGISTRY_PASSWORD: ${{ secrets.PACKAGE_TOKEN }}
+          PUBLISH_PACKAGES: cargo
+          PACKAGE_REGISTRY_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
           DELETE_OLD_RELEASE_ARTIFACTS: true
           PACKAGES: |
             packages.x86_64-linux.default.x86_64-unknown-linux-musl
@@ -38,9 +40,3 @@ jobs:
             images.x86_64-linux.default.x86_64-unknown-linux-musl
             images.x86_64-linux.default.aarch64-unknown-linux-musl
             images.x86_64-linux.default.armv7l-unknown-linux-musleabihf
-
-      - name: Release to Cargo
-        run: cargo publish --registry forgejo --locked # zizmor: ignore[use-trusted-publishing]
-        env:
-          CARGO_REGISTRIES_FORGEJO_INDEX: sparse+${{ forgejo.SERVER_URL }}/api/packages/${{ forgejo.REPOSITORY_OWNER }}/cargo/
-          CARGO_REGISTRIES_FORGEJO_TOKEN: Bearer ${{ secrets.PACKAGE_TOKEN }}
