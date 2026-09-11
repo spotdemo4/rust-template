@@ -118,6 +118,13 @@
                 runHook postCheck
               '';
 
+              doInstallCheck = true;
+              installCheckPhase = ''
+                runHook preInstallCheck
+                test "$("$out/bin/rust-template")" = "Hello, world!"
+                runHook postInstallCheck
+              '';
+
               meta = {
                 mainProgram = "rust-template";
                 description = "rust template";
@@ -153,6 +160,7 @@
         checks = pkgs.mkChecks {
           rust = self.packages.${system}.default.overrideAttrs {
             dontBuild = true;
+            doInstallCheck = false;
             installPhase = ''
               runHook preInstall
               touch $out
