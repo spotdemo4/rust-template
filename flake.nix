@@ -158,15 +158,7 @@
 
         # nix flake check
         checks = pkgs.mkChecks {
-          rust = self.packages.${system}.default.overrideAttrs {
-            dontBuild = true;
-            doInstallCheck = false;
-            installPhase = ''
-              runHook preInstall
-              touch $out
-              runHook postInstall
-            '';
-          };
+          inherit (self.packages.${system}) default;
 
           rustfmt = {
             root = ./.;
