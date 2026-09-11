@@ -118,7 +118,6 @@
                 runHook postCheck
               '';
 
-              doInstallCheck = true;
               installCheckPhase = ''
                 runHook preInstallCheck
                 test "$("$out/bin/rust-template")" = "Hello, world!"
