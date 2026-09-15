@@ -11,8 +11,4 @@ license-file = "LICENSE"
 [lints.clippy]
 pedantic = "warn"
 
-[[bin]]
-name = "rust-template"
-path = "main.rs"
-
 [dependencies]
