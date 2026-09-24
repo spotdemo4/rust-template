@@ -176,7 +176,9 @@ old_slug=rust-template
 old_description='rust template'
 old_url=https://trev.zip/template/rust
 replace_literal "$old_slug" "$slug" Cargo.toml Cargo.lock flake.nix
-replace_literal '0.7.2' "$version" Cargo.toml Cargo.lock flake.nix
+sed -i -E "/^\[package\]$/,/^\[/s@^(version = \")[^\"]*@\1$version@" Cargo.toml
+sed -i -E "/^name = \"$slug\"$/,/^\[/s@^(version = \")[^\"]*@\1$version@" Cargo.lock
+sed -i -E "/^[[:space:]]*pname = \"$slug\";$/,/^[[:space:]]*version = /s@^([[:space:]]*version = \")[^\"]*@\1$version@" flake.nix
 replace_literal "$old_description" "$nix_description" flake.nix
 replace_literal "$old_url" "$web_url" flake.nix
 replace_literal "$old_description" "$escaped_description" Cargo.toml
