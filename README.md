@@ -7,52 +7,15 @@
 
 template for starting [rust](https://rust-lang.org/) projects
 
-part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
-
-## requirements
-
-- [nix](https://nixos.org/)
-
-## getting started
+to initialize a new project, run:
 
 ```sh
-nix develop
 ./init.sh "Title" "Description"
 ```
 
-### run
+part of [spotdemo4/templates](https://github.com/spotdemo4/templates)
 
-```sh
-cargo run
-```
-
-### format
-
-```sh
-nix fmt
-```
-
-### check
-
-```sh
-nix flake check
-```
-
-### build
-
-```sh
-nix build
-```
-
-### release
-
-```sh
-bumper
-```
-
-releases are created automatically for [significant](https://www.conventionalcommits.org/en/v1.0.0/#summary) changes
-
-## use
+## using
 
 ### cargo
 
@@ -76,3 +39,7 @@ nix run git+https://trev.zip/template/rust.git
 ### download
 
 https://trev.zip/template/rust/releases
+
+## contributing
+
+see [CONTRIBUTING.md](CONTRIBUTING.md) for requirements and getting started
