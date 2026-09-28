@@ -9,13 +9,14 @@
 
   // repository
   "extends": ["config:recommended"],
+  "addLabels": ["dep"],
+  "nix": {
+    "enabled": true
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
     "schedule": ["* * * * 0"] // sunday
-  },
-  "nix": {
-    "enabled": true
   },
   "packageRules": [
     {
@@ -24,16 +25,15 @@
     },
     {
       "matchManagers": ["nix"],
-      "groupName": "nix inputs"
+      "addLabels": ["nix"]
     },
     {
       "matchManagers": ["github-actions"],
-      "groupName": "github actions"
+      "addLabels": ["actions"]
     },
     {
       "matchManagers": ["cargo"],
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "groupName": "rust crates"
+      "addLabels": ["rust"]
     }
   ]
 }
