@@ -91,7 +91,7 @@
 
         # nix build [#...]
         packages = {
-          default = pkgs.rustPlatform.buildRustPackage (
+          default = pkgs.mkRustPackage (
             final: with pkgs.lib; {
               pname = "rust-template";
               version = "0.13.0";
@@ -108,9 +108,7 @@
               };
               cargoLock.lockFile = ./Cargo.lock;
 
-              nativeCheckInputs = with pkgs; [
-                clippy
-              ];
+              nativeCheckInputs = with pkgs; [ clippy ];
               checkPhase = ''
                 runHook preCheck
                 cargo test --offline
