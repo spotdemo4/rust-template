@@ -32,8 +32,8 @@
         # nix develop [#...]
         devShells = {
           default = pkgs.mkShell {
-            RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
             shellHook = pkgs.shellhook.ref;
+            env.RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
             packages = with pkgs; [
               # rust
               rustc
