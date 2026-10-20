@@ -111,7 +111,6 @@
               checkPhase = ''
                 runHook preCheck
                 cargo test --offline
-                cargo clippy --offline --all-targets -- -D warnings
                 runHook postCheck
               '';
 
@@ -175,19 +174,15 @@
         checks = pkgs.mkChecks {
           inherit (self.packages.${system}) default;
 
-          rustfmt = {
-            root = ./.;
-            filter = file: file.hasExt "rs";
-            include = [
-              ./Cargo.lock
-              ./Cargo.toml
-            ];
+          rust = {
+            src = self.packages.${system}.default;
             packages = with pkgs; [
-              cargo
               rustfmt
+              clippy
             ];
             script = ''
               cargo fmt --check
+              cargo clippy --offline --all-targets -- -D warnings
             '';
           };
 
