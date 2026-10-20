@@ -174,7 +174,7 @@
         checks = pkgs.mkChecks {
           inherit (self.packages.${system}) default;
 
-          rust = {
+          rust-lint = {
             src = self.packages.${system}.default;
             packages = with pkgs; [
               rustfmt
