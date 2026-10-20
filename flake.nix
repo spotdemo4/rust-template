@@ -107,12 +107,22 @@
               };
               cargoLock.lockFile = ./Cargo.lock;
 
-              nativeCheckInputs = with pkgs; [ clippy ];
               checkPhase = ''
                 runHook preCheck
                 cargo test --offline
                 runHook postCheck
               '';
+
+              # also check the dependencies for clippy, the lints run in the rust-lint flake check
+              cargoArtifactsArgs = {
+                nativeCheckInputs = with pkgs; [ clippy ];
+                checkPhase = ''
+                  runHook preCheck
+                  cargo test --offline
+                  cargo clippy --offline --all-targets
+                  runHook postCheck
+                '';
+              };
 
               installCheckPhase = ''
                 runHook preInstallCheck
