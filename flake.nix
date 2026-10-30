@@ -107,6 +107,7 @@
               };
               cargoLock.lockFile = ./Cargo.lock;
 
+              doCheck = true;
               checkPhase = ''
                 runHook preCheck
                 cargo test --offline
@@ -116,6 +117,7 @@
               # also check the dependencies for clippy, the lints run in the rust-lint flake check
               cargoArtifactsArgs = {
                 nativeCheckInputs = with pkgs; [ clippy ];
+                doCheck = true;
                 checkPhase = ''
                   runHook preCheck
                   cargo test --offline
@@ -124,6 +126,7 @@
                 '';
               };
 
+              doInstallCheck = true;
               installCheckPhase = ''
                 runHook preInstallCheck
                 test "$("$out/bin/rust-template")" = "Hello, world!"
