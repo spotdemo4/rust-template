@@ -136,8 +136,10 @@
                 license = licenses.mit;
                 platforms = platforms.all;
                 homepage = "https://trev.zip/template/rust";
-                changelog = "https://trev.zip/template/rust/releases";
-                downloadPage = "https://trev.zip/template/rust/releases/tag/v${final.version}";
+                downloadPage = "https://trev.zip/template/rust/releases";
+                changelog = "https://trev.zip/template/rust/releases/tag/v${final.version}";
+                sourceProvenance = [ sourceTypes.fromSource ];
+                maintainers = [ maintainers.spotdemo4 ];
               };
             }
           );
