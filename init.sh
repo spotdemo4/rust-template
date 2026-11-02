@@ -336,9 +336,9 @@ EOF
     fi
   done
   if [[ -f .github/workflows/release.yaml ]]; then
-    # GitHub has no Cargo registry, so the release publishes to crates.io instead
-    sed -i -e '/^      packages: write$/d' \
-      -e 's/^\(          GITHUB_TOKEN: .*\)$/\1\n          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}/' .github/workflows/release.yaml
+    # GitHub has no Cargo registry, so the crate is installed from Git. Setting
+    # CRATES_IO_TOKEN opts in to publishing it to crates.io.
+    sed -i '/^      packages: write$/d' .github/workflows/release.yaml
   fi
   if [[ -f .forgejo/workflows/release.yaml ]]; then
     sed -i -E '/^          (CONTAINER_REGISTRY_PASSWORD|DELETE_OLD_RELEASE_ARTIFACTS): /d' .forgejo/workflows/release.yaml
@@ -375,7 +375,7 @@ write_readme() {
   old_cargo_command=$'cargo install rust-template \\\n  --index sparse+https://trev.zip/api/packages/template/cargo/'
   if $is_github; then
     cargo_command="cargo install $slug --git $web_url.git"
-    cargo_add=$'```sh\ncargo add '"$slug"$'\n```'
+    cargo_add=$'```sh\ncargo add '"$slug"' --git '"$web_url.git"$'\n```'
     image="ghcr.io/${repo_path,,}:latest"
   else
     registry_index="${web_url%/"$repo_path"}/api/packages/${repo_path%%/*}/cargo/"

@@ -215,12 +215,10 @@ test_library_github() (
   assert_initialized https://github.com/octo/hello-gh hello-gh test@example.com
   assert_eq "$(git remote)" origin remotes
   assert_missing src/main.rs .forgejo
-  assert_contains README.md 'cargo add hello-gh'
+  assert_contains README.md 'cargo add hello-gh --git https://github.com/octo/hello-gh.git'
   assert_lacks README.md 'cargo install' 'docker run' '--registry'
-  assert_contains .github/workflows/release.yaml \
-    'PACKAGES: packages.x86_64-linux.default' \
-    'CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}'
-  assert_lacks .github/workflows/release.yaml 'packages: write' images.x86_64-linux
+  assert_contains .github/workflows/release.yaml 'PACKAGES: packages.x86_64-linux.default'
+  assert_lacks .github/workflows/release.yaml 'packages: write' CRATES_IO_TOKEN images.x86_64-linux
   assert_library_works
 )
 
