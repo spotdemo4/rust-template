@@ -93,7 +93,7 @@
           default = pkgs.mkRustPackage (
             final: with pkgs.lib; {
               pname = "rust-template";
-              version = "0.15.2";
+              version = "0.16.0";
 
               src = fileset.toSource {
                 root = ./.;
