@@ -37,6 +37,7 @@
             packages = with pkgs; [
               # rust
               rustc
+              gcc # linker
               cargo
               rust-analyzer
               rustfmt
@@ -198,6 +199,25 @@
             script = ''
               cargo fmt --check
               cargo clippy --offline --all-targets -- -D warnings
+            '';
+          };
+
+          init = {
+            root = ./.;
+            packages = with pkgs; [
+              git
+              cargo
+              rustc
+              gcc # linker
+              clippy
+              rustfmt
+              jq
+              shellcheck
+              self.formatter.${system}
+            ];
+            script = ''
+              shellcheck init.sh init.test.sh
+              bash init.test.sh
             '';
           };
 
