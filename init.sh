@@ -207,12 +207,31 @@ if GIT_TERMINAL_PROMPT=0 git fetch --quiet --no-tags "$old_url" main 2>/dev/null
   done < <(git log --format='%T' HEAD)
 fi
 
+read -r -p 'Is this project a library? [y/N] ' reply || reply=
+if [[ $reply =~ ^[Yy]([Ee][Ss])?$ ]]; then
+  is_library=true
+  # Crate names can't contain hyphens or be keywords or built-in crates
+  crate=${slug//-/_}
+  case $crate in
+    abstract | as | async | await | become | box | break | const | continue | crate | do | dyn | else | enum | extern | false | final | fn | for | gen | if | impl | in | let | loop | macro | match | mod | move | mut | override | priv | pub | ref | return | self | static | struct | super | trait | true | try | type | typeof | unsafe | unsized | use | virtual | where | while | yield | alloc | core | proc_macro | std | test)
+      printf 'Title must produce a Rust crate name that is not a keyword or built-in crate.\n' >&2
+      exit 1
+      ;;
+  esac
+else
+  is_library=false
+fi
+
 changes_started=true
 rm template.schema.json
 sed -i '/^        # nix flake init /,/^        };$/d' flake.nix
 if [[ -n $template_commit ]]; then
-  printf '{ "$schema": "%s", "url": "%s", "commit": "%s" }\n' \
-    "$old_url/raw/branch/main/template.schema.json" "$old_url" "$template_commit" >.template.json
+  library_field=
+  if $is_library; then
+    library_field=', "library": true'
+  fi
+  printf '{ "$schema": "%s", "url": "%s", "commit": "%s"%s }\n' \
+    "$old_url/raw/branch/main/template.schema.json" "$old_url" "$template_commit" "$library_field" >.template.json
 else
   printf 'Warning: unable to find the template commit; .template.json was not created.\n' >&2
 fi
@@ -226,6 +245,58 @@ replace_literal "$old_url" "$web_url" flake.nix
 replace_literal "$old_description" "$escaped_description" Cargo.toml
 replace_literal "$old_url" "$web_url" Cargo.toml
 replace_literal 'Copyright (c) 2026 trev' "Copyright (c) $year $git_name" LICENSE
+
+if $is_library; then
+  # A library starts without the program.
+  rm src/main.rs
+  cat >src/lib.rs <<EOF
+//! A library that says hello.
+
+/// Returns a greeting for \`name\`.
+///
+/// # Examples
+///
+/// \`\`\`
+/// assert_eq!($crate::hello("world"), "Hello, world!");
+/// \`\`\`
+#[must_use]
+pub fn hello(name: &str) -> String {
+    format!("Hello, {name}!")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::hello;
+
+    #[test]
+    fn hello_greets() {
+        assert_eq!(hello("world"), "Hello, world!");
+    }
+}
+EOF
+
+  # There's no program to run or put in an image.
+  sed -i "/^              doInstallCheck = true;\$/,/^              '';\$/d" flake.nix
+  sed -i -E '/^                (mainProgram|downloadPage) = /d' flake.nix
+  sed -i '/^        # nix build #images/,/^        };$/d' flake.nix
+  sed -i '/^### run$/,/^### format$/{/^### format$/!d}' CONTRIBUTING.md
+
+  # flake-release only warns that the package has no outputs to archive, and
+  # publishes the crate from the package's source.
+  for workflow in .github/workflows/release.yaml .forgejo/workflows/release.yaml; do
+    if [[ -f $workflow ]]; then
+      sed -i -E '/^            (packages|images)\.x86_64-linux\.default\./d; s/^(          PACKAGES:) \|$/\1 packages.x86_64-linux.default/' "$workflow"
+    fi
+  done
+  if [[ -f .github/workflows/release.yaml ]]; then
+    # GitHub has no Cargo registry, so the release publishes to crates.io instead
+    sed -i -e '/^      packages: write$/d' \
+      -e 's/^\(          GITHUB_TOKEN: .*\)$/\1\n          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}/' .github/workflows/release.yaml
+  fi
+  if [[ -f .forgejo/workflows/release.yaml ]]; then
+    sed -i -E '/^          (CONTAINER_REGISTRY_PASSWORD|DELETE_OLD_RELEASE_ARTIFACTS): /d' .forgejo/workflows/release.yaml
+  fi
+fi
 
 if [[ ${provider_host,,} == github.com ]]; then
   is_github=true
@@ -244,20 +315,33 @@ encoded_lock_url="${raw_url}/flake.lock"
 encoded_lock_url=${encoded_lock_url//:/%253A}
 encoded_lock_url=${encoded_lock_url//\//%252F}
 nixpkgs_badge="[![nixpkgs](https://img.shields.io/endpoint?url=https%3A%2F%2Fnix-shield.trev.zip%2Fbadge%3Furl%3D${encoded_lock_url}%26input%3Dnixpkgs&logoColor=%23bac2de&labelColor=%23313244&color=%235277C3)](https://nixos.org/)"
-language_badge="[![rust](https://img.shields.io/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
+if $is_library; then
+  # Libraries show the minimum rust version they support.
+  language_badge="[![rust](https://img.shields.io/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&prefix=%3E%3D&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
+else
+  language_badge="[![rust](https://img.shields.io/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
+fi
 
-readme_sections=$(sed -n '/^## using$/,$p' README.md)
-readme_sections=${readme_sections//"$old_url"/"$web_url"}
 old_cargo_command=$'cargo install rust-template \\\n  --index sparse+https://trev.zip/api/packages/template/cargo/'
 if $is_github; then
   cargo_command="cargo install $slug --git $web_url.git"
+  cargo_add=$'```sh\ncargo add '"$slug"$'\n```'
   image="ghcr.io/${repo_path,,}:latest"
 else
-  cargo_command="cargo install $slug"$' \\\n  --index sparse+'"${web_url%/$repo_path}/api/packages/${repo_path%%/*}/cargo/"
+  registry_index="${web_url%/$repo_path}/api/packages/${repo_path%%/*}/cargo/"
+  cargo_command="cargo install $slug"$' \\\n  --index sparse+'"$registry_index"
+  cargo_add=$'```toml\n# .cargo/config.toml\n[registries.forgejo]\nindex = "sparse+'"$registry_index"$'"\n```\n\n```sh\ncargo add '"$slug"$' --registry forgejo\n```'
   image="$host/${repo_path,,}:latest"
 fi
-readme_sections=${readme_sections//"$old_cargo_command"/"$cargo_command"}
-readme_sections=${readme_sections//trev.zip\/template\/rust:latest/"$image"}
+if $is_library; then
+  readme_sections=$(sed -n '/^## contributing$/,$p' README.md)
+  printf -v readme_sections '## using\n\n%s\n\n%s' "$cargo_add" "$readme_sections"
+else
+  readme_sections=$(sed -n '/^## using$/,$p' README.md)
+  readme_sections=${readme_sections//"$old_url"/"$web_url"}
+  readme_sections=${readme_sections//"$old_cargo_command"/"$cargo_command"}
+  readme_sections=${readme_sections//trev.zip\/template\/rust:latest/"$image"}
+fi
 
 {
   printf '# %s\n\n' "$title"
