@@ -364,12 +364,12 @@ write_readme() {
   encoded_lock_url="${raw_url}/flake.lock"
   encoded_lock_url=${encoded_lock_url//:/%253A}
   encoded_lock_url=${encoded_lock_url//\//%252F}
-  nixpkgs_badge="[![nixpkgs](https://img.shields.io/endpoint?url=https%3A%2F%2Fnix-shield.trev.zip%2Fbadge%3Furl%3D${encoded_lock_url}%26input%3Dnixpkgs&logoColor=%23bac2de&labelColor=%23313244&color=%235277C3)](https://nixos.org/)"
+  nixpkgs_badge="[![nixpkgs](https://shields.trev.zip/endpoint?url=https%3A%2F%2Fnix-shield.trev.zip%2Fbadge%3Furl%3D${encoded_lock_url}%26input%3Dnixpkgs&logoColor=%23bac2de&labelColor=%23313244&color=%235277C3)](https://nixos.org/)"
   if $is_library; then
     # Libraries show the minimum rust version they support.
-    language_badge="[![rust](https://img.shields.io/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&prefix=%3E%3D&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
+    language_badge="[![rust](https://shields.trev.zip/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&prefix=%3E%3D&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
   else
-    language_badge="[![rust](https://img.shields.io/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
+    language_badge="[![rust](https://shields.trev.zip/badge/dynamic/toml?url=${raw_url}/Cargo.toml&query=%24.package.rust-version&logo=rust&logoColor=%23bac2de&label=version&labelColor=%23313244&color=%23D34516)](https://releases.rs/)"
   fi
 
   old_cargo_command=$'cargo install rust-template \\\n  --index sparse+https://trev.zip/api/packages/template/cargo/'
