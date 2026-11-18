@@ -410,13 +410,16 @@ write_readme() {
   fi
 
   old_cargo_command=$'cargo install rust-template \\\n  --index sparse+https://trev.zip/api/packages/template/cargo/'
+  # Programs that aren't published to the registry are installed from Git
+  cargo_command="cargo install $slug --git $web_url.git"
   if $is_github; then
-    cargo_command="cargo install $slug --git $web_url.git"
     cargo_add=$'```sh\ncargo add '"$slug"' --git '"$web_url.git"$'\n```'
     image="ghcr.io/${repo_path,,}:latest"
   else
     registry_index="${web_url%/"$repo_path"}/api/packages/${repo_path%%/*}/cargo/"
-    cargo_command="cargo install $slug"$' \\\n  --index sparse+'"$registry_index"
+    if $publish_packages; then
+      cargo_command="cargo install $slug"$' \\\n  --index sparse+'"$registry_index"
+    fi
     cargo_add=$'```toml\n# .cargo/config.toml\n[registries.'"$forge"$']\nindex = "sparse+'"$registry_index"$'"\n```\n\n```sh\ncargo add '"$slug"' --registry '"$forge"$'\n```'
     image="$host/${repo_path,,}:latest"
   fi
@@ -490,6 +493,27 @@ configure_providers() {
       configure_renovate "$other" "$secondary_repo_path" "$secondary_web_url"
     else
       remove_forge "$other"
+    fi
+  done
+}
+
+# Asks whether to publish the program to the Gitea or Forgejo package
+# registry, which flake-release does when PACKAGE_REGISTRY_TOKEN is set.
+# Libraries are always published, and GitHub has no Cargo registry.
+configure_packages() {
+  local reply workflow
+  publish_packages=true
+  if $is_library || [[ ! -d .gitea && ! -d .forgejo ]]; then
+    return
+  fi
+  read -r -p 'Publish the program to the package registry? [y/N] ' reply || reply=
+  if [[ $reply =~ ^[Yy]([Ee][Ss])?$ ]]; then
+    return
+  fi
+  publish_packages=false
+  for workflow in .gitea/workflows/release.yaml .forgejo/workflows/release.yaml; do
+    if [[ -f $workflow ]]; then
+      sed -i '/^          PACKAGE_REGISTRY_TOKEN: /d' "$workflow"
     fi
   done
 }
@@ -576,8 +600,9 @@ main() {
   if $is_library; then
     make_library
   fi
-  write_readme
   configure_providers
+  configure_packages
+  write_readme
   configure_editors
   commit_new_repository
   activate_new_repository

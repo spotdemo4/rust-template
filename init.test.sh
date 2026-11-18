@@ -151,8 +151,9 @@ test_application() (
   git add -A
   git commit --quiet --message 'Initial commit'
   # The build sandbox has no /usr/bin/env for the shebang
-  # GitHub (detected), application, no Gitea, Forgejo mirror, Zed, VS Code
-  printf '%s\n' '' n n y https://git.example.com/octo/hello-world '' '' | bash ./init.sh 'Hello World' "$description"
+  # GitHub (detected), application, no Gitea, Forgejo mirror, no publishing,
+  # Zed, VS Code
+  printf '%s\n' '' n n y https://git.example.com/octo/hello-world '' '' '' | bash ./init.sh 'Hello World' "$description"
 
   assert_initialized https://github.com/octo/hello-world hello-world test@example.com
   assert_eq "$(jq -r .library .template.json)" null '.template.json library'
@@ -175,7 +176,47 @@ test_application() (
   assert_contains .forgejo/renovate.jsonc \
     '"endpoint": "https://git.example.com/api/v1"' \
     '"repositories": ["octo/hello-world"]'
+  assert_contains .forgejo/workflows/release.yaml CONTAINER_REGISTRY_PASSWORD
+  assert_lacks .forgejo/workflows/release.yaml PACKAGE_REGISTRY_TOKEN
   [[ -f src/main.rs && -d .zed && -d .vscode ]] || fail 'application files are missing'
+)
+
+test_application_forgejo() (
+  local project=$tmp/hello-fj
+  new_project "$project" https://git.example.com/octo/hello-fj.git
+  cd "$project"
+  git add -A
+  git commit --quiet --message 'Initial commit'
+  # Forgejo (detected), application, no GitHub, no Gitea, no publishing, no
+  # Zed, no VS Code
+  printf '%s\n' '' n n n n n n | bash ./init.sh 'Hello FJ' 'Says hello'
+
+  assert_initialized https://git.example.com/octo/hello-fj hello-fj test@example.com
+  assert_contains README.md \
+    'cargo install hello-fj --git https://git.example.com/octo/hello-fj.git' \
+    'docker run git.example.com/octo/hello-fj:latest'
+  assert_lacks README.md '--index' 'api/packages'
+  assert_contains .forgejo/workflows/release.yaml CONTAINER_REGISTRY_PASSWORD
+  assert_lacks .forgejo/workflows/release.yaml PACKAGE_REGISTRY_TOKEN
+)
+
+test_application_published() (
+  local project=$tmp/hello-pub
+  new_project "$project" https://gitea.example.com/octo/hello-pub.git
+  cd "$project"
+  git add -A
+  git commit --quiet --message 'Initial commit'
+  # Gitea, application, no GitHub, no Forgejo, publishing, no Zed, no VS Code
+  printf '%s\n' Gitea n n n y n n | bash ./init.sh 'Hello Pub' 'Says hello'
+
+  assert_initialized https://gitea.example.com/octo/hello-pub hello-pub test@example.com
+  assert_contains README.md \
+    'cargo install hello-pub' \
+    '--index sparse+https://gitea.example.com/api/packages/octo/cargo/'
+  assert_lacks README.md '--git'
+  assert_contains .gitea/workflows/release.yaml \
+    'PACKAGE_REGISTRY_TOKEN: ${{ secrets.PACKAGE_TOKEN }}' \
+    CONTAINER_REGISTRY_PASSWORD
 )
 
 test_library() (
@@ -204,7 +245,7 @@ test_library() (
     '"endpoint": "https://gitea.example.com/api/v1"' \
     '"repositories": ["octo/hello-lib"]'
   for workflow in .forgejo/workflows/release.yaml .gitea/workflows/release.yaml; do
-    assert_contains "$workflow" 'PACKAGES: packages.x86_64-linux.default'
+    assert_contains "$workflow" 'PACKAGES: packages.x86_64-linux.default' PACKAGE_REGISTRY_TOKEN
     assert_lacks "$workflow" CONTAINER_REGISTRY_PASSWORD DELETE_OLD_RELEASE_ARTIFACTS images.x86_64-linux
   done
   assert_lacks CONTRIBUTING.md '### run'
@@ -303,7 +344,7 @@ chmod +x "$tmp/bin/nix"
 PATH=$tmp/bin:$PATH
 
 create_upstream
-for test in test_parse_remote test_slugify test_rust_crate test_nix_string test_toml_string test_application test_library test_library_github test_gitea test_rollback; do
+for test in test_parse_remote test_slugify test_rust_crate test_nix_string test_toml_string test_application test_application_forgejo test_application_published test_library test_library_github test_gitea test_rollback; do
   "$test"
   printf 'ok: %s\n' "$test"
 done
