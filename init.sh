@@ -531,6 +531,16 @@ configure_editors() {
   fi
 }
 
+# Skills live in .agents/skills, which other agents also read. .claude only
+# links them for Claude Code.
+configure_agents() {
+  local reply
+  read -r -p 'Are you using Claude Code? [Y/n] ' reply || reply=
+  if [[ $reply =~ ^[Nn]([Oo])?$ ]]; then
+    rm -rf .claude
+  fi
+}
+
 # Formats the project and commits it as the new repository's root commit.
 commit_new_repository() {
   local url file existing_tracked=()
@@ -604,6 +614,7 @@ main() {
   configure_packages
   write_readme
   configure_editors
+  configure_agents
   commit_new_repository
   activate_new_repository
 
