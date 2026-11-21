@@ -170,9 +170,9 @@ test_application() (
   git commit --quiet --message 'Initial commit'
   # The build sandbox has no /usr/bin/env for the shebang
   # GitHub (detected), application, no Gitea, Forgejo mirror, Tangled mirror,
-  # no publishing, Zed, VS Code, Claude Code
+  # no publishing, Zed, VS Code, Claude Code, T3 Code
   printf '%s\n' '' n n y https://git.example.com/octo/hello-world \
-    y octo.example.com@knot.example.com:did:plc:abcdefghijklmnopqrstuvwx '' '' '' '' |
+    y octo.example.com@knot.example.com:did:plc:abcdefghijklmnopqrstuvwx '' '' '' '' '' |
     bash ./init.sh 'Hello World' "$description"
 
   assert_initialized https://github.com/octo/hello-world hello-world test@example.com
@@ -200,7 +200,7 @@ test_application() (
     '"repositories": ["octo/hello-world"]'
   assert_contains .forgejo/workflows/release.yaml CONTAINER_REGISTRY_PASSWORD
   assert_lacks .forgejo/workflows/release.yaml PACKAGE_REGISTRY_TOKEN
-  [[ -f src/main.rs && -d .zed && -d .vscode ]] || fail 'application files are missing'
+  [[ -f src/main.rs && -d .zed && -d .vscode && -f t3.json ]] || fail 'application files are missing'
   assert_eq "$(git ls-files .claude)" .claude/skills 'tracked .claude files'
   assert_eq "$(readlink .claude/skills)" ../.agents/skills '.claude/skills target'
 )
@@ -212,11 +212,11 @@ test_application_forgejo() (
   git add -A
   git commit --quiet --message 'Initial commit'
   # Forgejo (detected), application, no GitHub, no Gitea, no Tangled, no
-  # publishing, no Zed, no VS Code, no Claude Code
-  printf '%s\n' '' n n n n n n n n | bash ./init.sh 'Hello FJ' 'Says hello'
+  # publishing, no Zed, no VS Code, no Claude Code, no T3 Code
+  printf '%s\n' '' n n n n n n n n n | bash ./init.sh 'Hello FJ' 'Says hello'
 
   assert_initialized https://git.example.com/octo/hello-fj hello-fj test@example.com
-  assert_missing .claude .tangled
+  assert_missing .claude .tangled t3.json
   [[ -f .agents/skills/template-sync/SKILL.md ]] || fail '.agents/skills is missing'
   assert_contains README.md \
     'cargo install hello-fj --git https://git.example.com/octo/hello-fj.git' \
@@ -233,8 +233,8 @@ test_application_published() (
   git add -A
   git commit --quiet --message 'Initial commit'
   # Gitea, application, no GitHub, no Forgejo, no Tangled, publishing, no Zed,
-  # no VS Code, no Claude Code
-  printf '%s\n' Gitea n n n n y n n n | bash ./init.sh 'Hello Pub' 'Says hello'
+  # no VS Code, no Claude Code, no T3 Code
+  printf '%s\n' Gitea n n n n y n n n n | bash ./init.sh 'Hello Pub' 'Says hello'
 
   assert_initialized https://gitea.example.com/octo/hello-pub hello-pub test@example.com
   assert_contains README.md \
@@ -255,9 +255,9 @@ test_library() (
   # The template's author keeps their maintainer entry
   git config user.email Me@Trev.xyz
   # Forgejo (detected), library, no GitHub, Gitea mirror, Tangled mirror, no
-  # Zed, no VS Code, no Claude Code
+  # Zed, no VS Code, no Claude Code, no T3 Code
   printf '%s\n' '' y n y https://gitea.example.com/octo/hello-lib \
-    y https://tangled.org/@octo.example.com/hello-lib n n n |
+    y https://tangled.org/@octo.example.com/hello-lib n n n n |
     bash init.sh 'Hello Lib' 'Says hello'
 
   assert_initialized https://git.example.com/octo/hello-lib hello-lib Me@Trev.xyz
@@ -266,7 +266,7 @@ test_library() (
   assert_eq "$(git remote)" $'gitea\norigin\ntangled' remotes
   assert_eq "$(git remote get-url tangled)" https://tangled.org/@octo.example.com/hello-lib 'tangled remote'
   [[ -d .tangled ]] || fail '.tangled is missing'
-  assert_missing src/main.rs .github .zed .vscode .claude
+  assert_missing src/main.rs .github .zed .vscode .claude t3.json
   assert_contains README.md \
     'index = "sparse+https://git.example.com/api/packages/octo/cargo/"' \
     'cargo add hello-lib --registry forgejo' \
@@ -292,13 +292,14 @@ test_library_github() (
   git add -A
   git commit --quiet --message 'Initial commit'
   # GitHub (detected), library, no Gitea, no Forgejo, no Tangled, Zed, VS Code,
-  # Claude Code
-  printf '%s\n' '' y n n n y y y | bash ./init.sh 'Hello GH' 'Says hello'
+  # Claude Code, T3 Code
+  printf '%s\n' '' y n n n y y y y | bash ./init.sh 'Hello GH' 'Says hello'
 
   assert_initialized https://github.com/octo/hello-gh hello-gh test@example.com
   assert_eq "$(git remote)" origin remotes
   assert_missing src/main.rs .forgejo .gitea .tangled
   [[ -L .claude/skills ]] || fail '.claude/skills is missing'
+  [[ -f t3.json ]] || fail 't3.json is missing'
   assert_contains README.md 'cargo add hello-gh --git https://github.com/octo/hello-gh.git'
   assert_lacks README.md 'cargo install' 'docker run' '--registry'
   assert_contains .github/workflows/release.yaml 'PACKAGES: packages.x86_64-linux.default'
@@ -313,13 +314,13 @@ test_gitea() (
   git add -A
   git commit --quiet --message 'Initial commit'
   # Gitea, library, GitHub mirror, no Forgejo, no Tangled, no Zed, no VS Code,
-  # no Claude Code
-  printf '%s\n' Gitea y y git@github.com:octo/hello-mirror.git n n n n n | bash ./init.sh 'Hello Gitea' 'Says hello'
+  # no Claude Code, no T3 Code
+  printf '%s\n' Gitea y y git@github.com:octo/hello-mirror.git n n n n n n | bash ./init.sh 'Hello Gitea' 'Says hello'
 
   assert_initialized https://gitea.example.com/octo/hello-gitea hello-gitea test@example.com
   assert_eq "$(git remote)" $'github\norigin' remotes
   assert_eq "$(git remote get-url github)" git@github.com:octo/hello-mirror.git 'github remote'
-  assert_missing .forgejo .tangled .zed .vscode .claude
+  assert_missing .forgejo .tangled .zed .vscode .claude t3.json
   assert_contains README.md \
     'https://gitea.example.com/octo/hello-gitea/actions?workflow=check.yaml' \
     'logo=gitea' \
